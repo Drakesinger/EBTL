@@ -1,7 +1,7 @@
 # (Emergency) Blood Type Locator
 
 ## Program Description
-(Emergency) Blood Type Locator (from now on called (E)BTL) is an application used for emergency localization of people with a specific blood type.
+(Emergency) Blood Type Locator which from now on will be called (E)BTL is an application used for emergency localization of people with a specific blood type.
 The program allows one to suscribe to a database with the following private information:
 * Name
 * Surname
@@ -20,15 +20,15 @@ In case of an emergency, the emergency services use the desktop application to l
 ### Main Features
 
 A (universal) desktop app used by the emergency services:
-1. [ ]  Shows a map
-2. [ ]  Active geo-fenced phones are shown on the map
-3. [ ]  Clicking on a geo-fence shows information about that person
-4. [ ]  Search for a specific blood-type
+* [ ]  Shows a map
+* [ ]  Active geo-fenced phones are shown on the map
+* [ ]  Clicking on a geo-fence shows information about that person
+* [ ]  Search for a specific blood-type
      * [ ] In an specified area radius
-5. [ ]  Launch an alert for a blood-type
+* [ ]  Launch an alert for a blood-type
 
 A (universal) desktop app used by volunteers:
-1. [ ] Allows to suscribe with the following information:
+* [ ] Allows to suscribe with the following information:
     * [ ] Name
     * [ ] Surname
     * [ ] Address
@@ -38,8 +38,8 @@ A (universal) desktop app used by volunteers:
 ### Optional Features
 
 Communication between the emergency and user application:
-1. [ ] Send notifications (a modal pop-up)
-2. [ ] Asks the user if he aggrees with sending real-time geo-location data to the server
-3. [ ] Update the database with the new location of the user    
-4. [ ] Mobile App for users (Xamarin for cross platform)
+* [ ] Send notifications (a modal pop-up)
+* [ ] Asks the user if he aggrees with sending real-time geo-location data to the server
+* [ ] Update the database with the new location of the user    
+* [ ] Mobile App for users (Xamarin for cross platform)
 
