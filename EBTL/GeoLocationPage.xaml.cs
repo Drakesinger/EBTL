@@ -105,11 +105,6 @@ namespace EBTL
             //CancelGetGeolocationButton.IsEnabled = false;
         }
 
-        private void OnPositionChanged(Geolocator sender, PositionChangedEventArgs args)
-        {
-            // TODO
-        }
-
         private void HideLocationDisablesInformation()
         {
             LocationDisabledMessage.Visibility = Visibility.Collapsed;
@@ -149,59 +144,68 @@ namespace EBTL
         {
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-            // Show the location setting message only if status is disabled.
-            LocationDisabledMessage.Visibility = Visibility.Collapsed;
+                // Show the location setting message only if status is disabled.
+                LocationDisabledMessage.Visibility = Visibility.Collapsed;
 
                 switch (e.Status)
                 {
                     case PositionStatus.Ready:
-                    // Location platform is providing valid data.
-                    //ScenarioOutput_Status.Text = "Ready";
-                    //_rootPage.NotifyUser("Location platform is ready.", NotifyType.StatusMessage);
-                    break;
+                        // Location platform is providing valid data.
+                        //ScenarioOutput_Status.Text = "Ready";
+                        //_rootPage.NotifyUser("Location platform is ready.", NotifyType.StatusMessage);
+                        break;
 
                     case PositionStatus.Initializing:
-                    // Location platform is attempting to acquire a fix.
-                    //ScenarioOutput_Status.Text = "Initializing";
-                    //_rootPage.NotifyUser("Location platform is attempting to obtain a position.", NotifyType.StatusMessage);
-                    break;
+                        // Location platform is attempting to acquire a fix.
+                        //ScenarioOutput_Status.Text = "Initializing";
+                        //_rootPage.NotifyUser("Location platform is attempting to obtain a position.", NotifyType.StatusMessage);
+                        break;
 
                     case PositionStatus.NoData:
-                    // Location platform could not obtain location data.
-                    //ScenarioOutput_Status.Text = "No data";
-                    //_rootPage.NotifyUser("Not able to determine the location.", NotifyType.ErrorMessage);
-                    break;
+                        // Location platform could not obtain location data.
+                        //ScenarioOutput_Status.Text = "No data";
+                        //_rootPage.NotifyUser("Not able to determine the location.", NotifyType.ErrorMessage);
+                        break;
 
                     case PositionStatus.Disabled:
-                    // The permission to access location data is denied by the user or other policies.
-                    //ScenarioOutput_Status.Text = "Disabled";
-                    //_rootPage.NotifyUser("Access to location is denied.", NotifyType.ErrorMessage);
+                        // The permission to access location data is denied by the user or other policies.
+                        //ScenarioOutput_Status.Text = "Disabled";
+                        //_rootPage.NotifyUser("Access to location is denied.", NotifyType.ErrorMessage);
 
-                    // Show message to the user to go to location settings.
-                    LocationDisabledMessage.Visibility = Visibility.Visible;
+                        // Show message to the user to go to location settings.
+                        LocationDisabledMessage.Visibility = Visibility.Visible;
 
-                    // Clear any cached location data.
-                    UpdateLocationData(null);
+                        // Clear any cached location data.
+                        UpdateLocationData(null);
                         break;
 
                     case PositionStatus.NotInitialized:
-                    // The location platform is not initialized. This indicates that the application
-                    // has not made a request for location data.
-                    //ScenarioOutput_Status.Text = "Not initialized";
-                    //_rootPage.NotifyUser("No request for location is made yet.", NotifyType.StatusMessage);
-                    break;
+                        // The location platform is not initialized. This indicates that the application
+                        // has not made a request for location data.
+                        //ScenarioOutput_Status.Text = "Not initialized";
+                        //_rootPage.NotifyUser("No request for location is made yet.", NotifyType.StatusMessage);
+                        break;
 
                     case PositionStatus.NotAvailable:
-                    // The location platform is not available on this version of the OS.
-                    //ScenarioOutput_Status.Text = "Not available";
-                    //_rootPage.NotifyUser("Location is not available on this version of the OS.", NotifyType.ErrorMessage);
-                    break;
+                        // The location platform is not available on this version of the OS.
+                        //ScenarioOutput_Status.Text = "Not available";
+                        //_rootPage.NotifyUser("Location is not available on this version of the OS.", NotifyType.ErrorMessage);
+                        break;
 
                     default:
-                    //ScenarioOutput_Status.Text = "Unknown";
-                    //_rootPage.NotifyUser(string.Empty, NotifyType.StatusMessage);
-                    break;
+                        //ScenarioOutput_Status.Text = "Unknown";
+                        //_rootPage.NotifyUser(string.Empty, NotifyType.StatusMessage);
+                        break;
                 }
+            });
+        }
+
+        async private void OnPositionChanged(Geolocator sender, PositionChangedEventArgs args)
+        {
+            await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
+            {
+                //_rootPage.NotifyUser("Location updated.", NotifyType.StatusMessage);
+                UpdateLocationData(args.Position);
             });
         }
 
