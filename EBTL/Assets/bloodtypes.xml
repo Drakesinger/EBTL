@@ -1,0 +1,11 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<bloodtypes>
+  <bloodtype>A+</bloodtype>
+  <bloodtype>A-</bloodtype>
+  <bloodtype>B+</bloodtype>
+  <bloodtype>B-</bloodtype>
+  <bloodtype>AB+</bloodtype>
+  <bloodtype>AB-</bloodtype>
+  <bloodtype>O+</bloodtype>
+  <bloodtype>O-</bloodtype>
+</bloodtypes>

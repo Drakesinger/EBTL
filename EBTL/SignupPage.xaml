@@ -1,0 +1,53 @@
+﻿<Page
+    x:Class="EBTL.SignupPage"
+    xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+    xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+    xmlns:local="using:EBTL"
+    xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+    xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+    mc:Ignorable="d">
+
+    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+        <TextBlock x:Name="textBlock" Height="38" Margin="0,10,0,0" TextWrapping="Wrap" Text="EBTL" VerticalAlignment="Top" FontWeight="Bold" FontSize="24" TextAlignment="Center" Foreground="#FFC42F2F" SelectionHighlightColor="#FF2388D7" HorizontalAlignment="Center" />
+        <StackPanel HorizontalAlignment="Center" VerticalAlignment="Center" Padding="0">
+            <TextBlock x:Name="textBlock_Name" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Your name" VerticalAlignment="Top" Padding="0,5,0,0" />
+            <TextBox x:Name="textBox_Name" HorizontalAlignment="Center" TextWrapping="Wrap" VerticalAlignment="Top" Width="238" InputScope="PersonalFullName" TabIndex="1" PlaceholderText="Please insert your name" BorderBrush="#FF7A7A7A"/>
+            <TextBlock x:Name="textBlock_Surname" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Your first name" VerticalAlignment="Top" Padding="0,5,0,0" />
+            <TextBox x:Name="textBox_Surname" HorizontalAlignment="Center" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="238" TabIndex="2" PlaceholderText="How do your friends call you?" />
+            <TextBlock x:Name="textBlock_Bloodtype" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Your bloodtype" VerticalAlignment="Top" Padding="0,5,0,0" />
+            <ComboBox x:Name="comboBox_BloodType" HorizontalAlignment="Center" VerticalAlignment="Center" Width="238" PlaceholderText="For vampire information"/>
+            <Grid UseLayoutRounding="True">
+                <Grid.ColumnDefinitions>
+                    <ColumnDefinition Width="86*" />
+                    <ColumnDefinition Width="33*" />
+                </Grid.ColumnDefinitions>
+                <Grid.RowDefinitions>
+                    <RowDefinition MaxHeight="32" Height="Auto" />
+                    <RowDefinition Height="Auto"/>
+                </Grid.RowDefinitions>
+                <TextBlock x:Name="textBlock_Address" TextWrapping="Wrap" Text="Your address" Padding="0,5,0,0" />
+                <TextBox x:Name="textBox_Address_Street" HorizontalAlignment="Left" TextWrapping="Wrap" Text="Street" VerticalAlignment="Top" AcceptsReturn="True" Width="168" Height="32" Margin="0,3,0,0" Grid.Row="1" />
+                <TextBox x:Name="textBox_Address_Nr" HorizontalAlignment="Right" TextWrapping="Wrap" Text="nr" VerticalAlignment="Top" Width="64" Height="32" Grid.Column="1" Margin="0,3,0,0" Grid.Row="1" />
+            </Grid>
+            <StackPanel>
+                <TextBox x:Name="textBox_Address_City" TextWrapping="Wrap" Text="City" Margin="0,10,0,0" />
+                <ComboBox x:Name="comboBox_City" PlaceholderText="City" HorizontalAlignment="Stretch" Margin="0,10,0,0" />
+                <ComboBox x:Name="comboBox_Country" SelectionChanged="comboBox_Country_SelectionChanged" PlaceholderText="Country" HorizontalAlignment="Stretch" Margin="0,10,0,0" />
+            </StackPanel>
+            <Button x:Name="button_signUp" Content="Sign me up!" Background="#33FFFFFF" Click="button_signUp_Click" HorizontalAlignment="Center" Margin="0,20,0,0">
+                <Button.BorderBrush>
+                    <SolidColorBrush Color="White" Opacity="0" />
+                </Button.BorderBrush>
+                <Button.Foreground>
+                    <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
+                        <LinearGradientBrush.RelativeTransform>
+                            <CompositeTransform CenterY="0.5" CenterX="0.5" Rotation="145" />
+                        </LinearGradientBrush.RelativeTransform>
+                        <GradientStop Color="#FF814CED" Offset="0.102" />
+                        <GradientStop Color="#FF106FE3" Offset="0.667" />
+                    </LinearGradientBrush>
+                </Button.Foreground>
+            </Button>
+        </StackPanel>
+    </Grid>
+</Page>
