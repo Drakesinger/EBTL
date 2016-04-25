@@ -107,6 +107,7 @@ namespace EBTL
         {
             string _DonorSurName = textBox_Surname.Text;
             string _DonorName = textBox_Name.Text;
+            string _DonorContactNumber = textBox_Number.Text;
             string _DonorAddressStreet = textBox_Address_Street.Text;
             string _DonorAddressNumber = textBox_Address_Nr.Text;
             string _DonorAddressCity;
@@ -124,7 +125,7 @@ namespace EBTL
 
             string _DonorAddress = _DonorAddressStreet + _Delimiter + _DonorAddressNumber + _Delimiter + _DonorAddressCity + _Delimiter + _DonorAddressCountry;
 
-            var _Donor = new Donor(_DonorSurName, _DonorName, _DonorAddress, _DonorBloodType);
+            var _Donor = new Donor(_DonorSurName, _DonorName, _DonorContactNumber, _DonorAddress, _DonorBloodType);
 
             // Load the geo-locating page and send data from this page over.
             this.Frame.Navigate((typeof(GeoLocationPage)), _Donor);

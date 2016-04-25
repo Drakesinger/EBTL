@@ -95,6 +95,11 @@ namespace EBTL
         private void InformUserOfDeniedChoice()
         {
             //throw new NotImplementedException();
+            // Use address as location.
+            
+
+            // Set the link to settings to visible.
+            LocationDisabledMessage.Visibility = Visibility.Visible;
         }
 
         private void UpdateLocationData(Geoposition pos)

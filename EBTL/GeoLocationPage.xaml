@@ -12,7 +12,7 @@
         <StackPanel x:Name="stackPanel_GeoLoc" Width="238" HorizontalAlignment="Center" VerticalAlignment="Center">
             <TextBlock x:Name="textBlock_Update" TextWrapping="Wrap" Text="Do you agree to send updated geolocation data to our servers?" Margin="5,10" TextAlignment="Center"/>
             <ToggleSwitch x:Name="toggleSwitch_Update" OffContent="No" OnContent="Yes" HorizontalContentAlignment="Left" UseLayoutRounding="True" MinWidth="0" HorizontalAlignment="Center" Toggled="toggleSwitch_Update_Toggled" />
-            <StackPanel x:Name="stackPanel_Setup">
+            <StackPanel x:Name="stackPanel_Setup" Visibility="Collapsed">
                 <TextBlock x:Name="textBlock_Delay" TextWrapping="Wrap" Text="Delay between geolocation update" Padding="0,5,0,0" TextAlignment="Center" />
                 <TextBox x:Name="textBox_Delay" TextWrapping="Wrap" InputScope="Number" TabIndex="1" PlaceholderText="By default: once every 2 hours" BorderBrush="#FF7A7A7A"/>
                 <RadioButton x:Name="radioButton_Hours" Content="Hours" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" GroupName="DelayTimeType" Margin="10,0,0,0" IsChecked="True"/>
@@ -30,6 +30,18 @@
                     <TextBlock x:Name="textBlock_Long" TextWrapping="NoWrap" Text="Lon" Grid.Column="1" HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="100" MaxHeight="20"/>
                 </Grid>
             </StackPanel>
+            <TextBlock x:Name="textBlock_Information" TextWrapping="Wrap" Text="If you do not, we will use your address to identify your location." TextAlignment="Center"/>
+            <TextBlock x:Name="LocationDisabledMessage" FontStyle="Italic" TextWrapping="Wrap" TextAlignment="Center" Visibility="Collapsed" >
+            	<Run Text="This app is not able to access Location. Go to " />
+            	<Hyperlink NavigateUri="ms-settings:privacy-location">
+            		<Run Text="Settings" />
+            	</Hyperlink>
+            	<Run Text=" to check the location privacy settings."/>
+            </TextBlock>
+
+            <!--Set Visibility to Visible when access to location is denied -->
+
+
         </StackPanel>
 
     </Grid>
