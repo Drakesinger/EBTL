@@ -126,8 +126,19 @@ namespace EBTL
 
         private void UpdateLocationData(Geoposition pos)
         {
+            if(pos != null)
+            { 
             textBlock_Lat.Text = pos.Coordinate.Latitude.ToString();
             textBlock_Long.Text = pos.Coordinate.Longitude.ToString();
+
+                // Update donor data.
+                _Donor.GeoLocation = pos;
+            }
+            else
+            {
+                textBlock_Lat.Text = "Lat";
+                textBlock_Long.Text = "Long";
+            }
         }
 
         protected override void OnNavigatedTo(NavigationEventArgs e)
