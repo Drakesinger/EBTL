@@ -28,12 +28,12 @@ A (universal) desktop app used by the emergency services:
 * [ ]  Launch an alert for a blood-type
 
 A (universal) desktop app used by volunteers:
-* [ ] Allows to suscribe with the following information:
-    * [ ] Name
-    * [ ] Surname
-    * [ ] Address
+* [ ] Allows to subscribe with the following information:
+    * [x] Name
+    * [x] Surname
+    * [x] Address
     * [ ] Emergency phone number
-    * [ ] Blood-Type 
+    * [x] Blood-Type
 
 ### Optional Features
 
@@ -42,4 +42,3 @@ Communication between the emergency and user application:
 * [ ] Asks the user if he aggrees with sending real-time geo-location data to the server
 * [ ] Update the database with the new location of the user    
 * [ ] Mobile App for users (Xamarin for cross platform)
-
