@@ -1,9 +1,11 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
-VisualStudioVersion = 14.0.24720.0
+VisualStudioVersion = 14.0.25123.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBTL", "EBTL\EBTL.csproj", "{E55702B4-490C-41EE-981C-BF97E042F3A4}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "EBTL-Control", "EBTL-Control\EBTL-Control.csproj", "{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -33,6 +35,24 @@ Global
 		{E55702B4-490C-41EE-981C-BF97E042F3A4}.Release|x86.ActiveCfg = Release|x86
 		{E55702B4-490C-41EE-981C-BF97E042F3A4}.Release|x86.Build.0 = Release|x86
 		{E55702B4-490C-41EE-981C-BF97E042F3A4}.Release|x86.Deploy.0 = Release|x86
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Debug|ARM.ActiveCfg = Debug|ARM
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Debug|ARM.Build.0 = Debug|ARM
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Debug|ARM.Deploy.0 = Debug|ARM
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Debug|x64.ActiveCfg = Debug|x64
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Debug|x64.Build.0 = Debug|x64
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Debug|x64.Deploy.0 = Debug|x64
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Debug|x86.ActiveCfg = Debug|x86
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Debug|x86.Build.0 = Debug|x86
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Debug|x86.Deploy.0 = Debug|x86
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Release|ARM.ActiveCfg = Release|ARM
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Release|ARM.Build.0 = Release|ARM
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Release|ARM.Deploy.0 = Release|ARM
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Release|x64.ActiveCfg = Release|x64
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Release|x64.Build.0 = Release|x64
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Release|x64.Deploy.0 = Release|x64
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Release|x86.ActiveCfg = Release|x86
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Release|x86.Build.0 = Release|x86
+		{E2CC5B13-2CD1-4E1C-AA19-63F5D7D91D3B}.Release|x86.Deploy.0 = Release|x86
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

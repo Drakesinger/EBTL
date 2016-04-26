@@ -38,11 +38,6 @@
             	</Hyperlink>
             	<Run Text=" to check the location privacy settings."/>
             </TextBlock>
-
-            <!--Set Visibility to Visible when access to location is denied -->
-
-
         </StackPanel>
-
     </Grid>
 </Page>
