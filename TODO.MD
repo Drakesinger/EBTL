@@ -7,7 +7,7 @@ Both:
 - [ ] SQL Querries.
 
 Control:
-- [ ] Map Control and view.
+- [x] Map Control and view.
 - [ ] Search in map.
   - [ ] Search according to time-of-travel-to-destination.
   - [ ] Search according to birdfly distance.
