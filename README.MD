@@ -20,7 +20,7 @@ In case of an emergency, the emergency services use the desktop application to l
 ### Main Features
 
 A (universal) desktop app used by the emergency services:
-* [ ]  Shows a map
+* [x]  Shows a map
 * [ ]  Active geo-fenced phones are shown on the map
 * [ ]  Clicking on a geo-fence shows information about that person
 * [ ]  Search for a specific blood-type
@@ -32,7 +32,7 @@ A (universal) desktop app used by volunteers:
     * [x] Name
     * [x] Surname
     * [x] Address
-    * [ ] Emergency phone number
+    * [x] Emergency phone number
     * [x] Blood-Type
 
 ### Optional Features
