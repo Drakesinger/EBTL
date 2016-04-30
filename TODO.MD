@@ -8,9 +8,9 @@ Both:
 
 Control:
 - [x] Map Control and view.
-- [ ] Search in map.
-  - [ ] Search according to time-of-travel-to-destination.
-  - [ ] Search according to birdfly distance.
+- [x] Search in map.
+  - [x] Search according to time-of-travel-to-destination.
+  - [x] Search according to birdfly distance.
 - [ ] All donors without geoposition must be geopositioned
   - Either do a bing map service query and store geoposition
   - Or just use the address in map if geoposition is not present.
