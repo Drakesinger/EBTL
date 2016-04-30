@@ -21,9 +21,9 @@ In case of an emergency, the emergency services use the desktop application to l
 
 A (universal) desktop app used by the emergency services:
 * [x]  Shows a map
-* [ ]  Active geo-fenced phones are shown on the map
-* [ ]  Clicking on a geo-fence shows information about that person
-* [ ]  Search for a specific blood-type
+* [x]  Active geo-fenced phones are shown on the map
+* [x]  Clicking on a geo-fence shows information about that person
+* [x]  Search for a specific blood-type
      * [ ] In an specified area radius
 * [ ]  Launch an alert for a blood-type
 
