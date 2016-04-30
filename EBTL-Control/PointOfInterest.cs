@@ -8,9 +8,11 @@ namespace EBTL_Control.ViewModel
 {
     public class PointOfInterest
     {
+        private Point _DefaultAnchorPoint = new Point(28, 87);
+
         public PointOfInterest()
         {
-            this.NormalizedAnchorPoint = new Point(0.5, 1);
+            this.NormalizedAnchorPoint = _DefaultAnchorPoint;
             this.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
         }
 
@@ -31,7 +33,7 @@ namespace EBTL_Control.ViewModel
 
             this.DisplayName = _Donor.Name + " " + _Donor.Surname;
             this.ImageSourceUri = new Uri("ms-appx:///Assets/MapPin.png", UriKind.RelativeOrAbsolute);
-            this.NormalizedAnchorPoint = new Point(0.5, 1);
+            this.NormalizedAnchorPoint = _DefaultAnchorPoint;
             this.Address = _Donor.Address;
             this.BloodType = _Donor.BloodType;
             this.EmergencyNumber = _Donor.EmergencyNumber;

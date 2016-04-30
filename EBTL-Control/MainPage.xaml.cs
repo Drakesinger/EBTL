@@ -1,7 +1,6 @@
 ﻿using EBTL;
 using EBTL_Control.ViewModel;
 using System;
-using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
@@ -9,8 +8,6 @@ using Windows.Devices.Geolocation;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
-using Windows.UI.Xaml.Controls.Maps;
-using Windows.UI.Xaml.Data;
 using Windows.UI.Xaml.Media;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -51,14 +48,13 @@ namespace EBTL_Control
         private void MainMap_MapTapped(Windows.UI.Xaml.Controls.Maps.MapControl sender, Windows.UI.Xaml.Controls.Maps.MapInputEventArgs args)
         {
             var tappedGeoPosition = args.Location.Position;
-            string status = "MapTapped at \nLatitude:" + tappedGeoPosition.Latitude + "\nLongitude: " + tappedGeoPosition.Longitude;
-            _MainPage.NotifyUser(status, NotifyType.StatusMessage);
+            //string status = "MapTapped at \nLatitude:" + tappedGeoPosition.Latitude + "\nLongitude: " + tappedGeoPosition.Longitude;
+            //_MainPage.NotifyUser(status, NotifyType.StatusMessage);
 
-            Donor _TempDonor = new Donor("Temp", "Test", "07855555524", "Stuff here", "AB+")
+            Donor _TempDonor = new Donor("Temp " + _Donors.Count, "Test", "07855555524", "Address: Random Address", "AB+")
             {
                 GeoPoint = new Geopoint(new BasicGeoposition()
                 {
-                    //Geopoint for Seattle
                     Latitude = tappedGeoPosition.Latitude,
                     Longitude = tappedGeoPosition.Longitude
                 })
@@ -76,15 +72,18 @@ namespace EBTL_Control
         {
             _Donors.Add(new PointOfInterest(_Donor));
 
-            // The Stupid way.
-            // However http://msdn.microsoft.com/EN-US/library/dn792121(v=VS.10,d=hv.2).aspx says that you cannot bind the ItemsSource to the MapControl.
-            MapItems.ItemsSource = null;
-            MapItems.ItemsSource = _Donors;
+            UpdateMapItemsControlItemsSource();
         }
 
-        private void addXamlChildrenButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        /// <summary>
+        /// The stupid way to update the source of items to display within the map.
+        /// One cannot bind the ItemsSource of the MapControl in another way.
+        /// </summary>
+        /// <see cref="http://msdn.microsoft.com/EN-US/library/dn792121(v=VS.10,d=hv.2).aspx"/>
+        private void UpdateMapItemsControlItemsSource()
         {
-            MapItems.ItemsSource = _POIManager.FetchPOIs(MainMap.Center.Position);
+            MapItems.ItemsSource = null;
+            MapItems.ItemsSource = _Donors;
         }
 
         /// Will use this to get the information.
@@ -92,16 +91,8 @@ namespace EBTL_Control
         {
             var buttonSender = sender as Button;
             PointOfInterest poi = buttonSender.DataContext as PointOfInterest;
-            _MainPage.NotifyUser("PointOfInterest clicked = " + poi.DisplayName, NotifyType.StatusMessage);
-
-            if (poi.Visibility == Visibility.Visible)
-            {
-                poi.Visibility = Visibility.Collapsed;
-            }
-            else
-            {
-                poi.Visibility = Visibility.Visible;
-            }
+            var _poiLocation = "Lat: " + poi.Location.Position.Latitude + "\n" + poi.Location.Position.Longitude;
+            _MainPage.NotifyUser("Donor Information: " + poi.DisplayName + ";\n" + poi.Address + ";\n" + _poiLocation, NotifyType.StatusMessage);
         }
 
         private async void InitializeLocationService()
