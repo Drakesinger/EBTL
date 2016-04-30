@@ -1,11 +1,17 @@
-﻿using EBTL_Control.ViewModel;
+﻿using EBTL;
+using EBTL_Control.ViewModel;
 using System;
+using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Maps;
+using Windows.UI.Xaml.Data;
+using Windows.UI.Xaml.Media;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
 
@@ -16,6 +22,8 @@ namespace EBTL_Control
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        public static MainPage _MainPage;
+
         private CancellationTokenSource _cts;
         private uint _UpdateDelta = 7200; // 2 Hours.
 
@@ -23,9 +31,16 @@ namespace EBTL_Control
         private Geopoint _HospitalGeoPoint;
         private PointOfInterestsManager _POIManager;
 
+        // Will be bound to MapItems.ItemsSource;
+        public ObservableCollection<PointOfInterest> _Donors { get; private set; }
+
+        //private List<PointOfInterest> _Donors;
+
         public MainPage()
         {
             this.InitializeComponent();
+
+            _MainPage = this;
 
             InitializeLocationService();
 
@@ -37,20 +52,56 @@ namespace EBTL_Control
         {
             var tappedGeoPosition = args.Location.Position;
             string status = "MapTapped at \nLatitude:" + tappedGeoPosition.Latitude + "\nLongitude: " + tappedGeoPosition.Longitude;
-            //rootPage.NotifyUser(status, NotifyType.StatusMessage);
-            // Will use this to get the information.
+            _MainPage.NotifyUser(status, NotifyType.StatusMessage);
+
+            Donor _TempDonor = new Donor("Temp", "Test", "07855555524", "Stuff here", "AB+")
+            {
+                GeoPoint = new Geopoint(new BasicGeoposition()
+                {
+                    //Geopoint for Seattle
+                    Latitude = tappedGeoPosition.Latitude,
+                    Longitude = tappedGeoPosition.Longitude
+                })
+            };
+
+            AddDonorOnMap(_TempDonor);
+        }
+
+        private void QueryDonors(string _Filter)
+        {
+            // This function must ask the database for all donors according to the filter defined.
+        }
+
+        private void AddDonorOnMap(Donor _Donor)
+        {
+            _Donors.Add(new PointOfInterest(_Donor));
+
+            // The Stupid way.
+            // However http://msdn.microsoft.com/EN-US/library/dn792121(v=VS.10,d=hv.2).aspx says that you cannot bind the ItemsSource to the MapControl.
+            MapItems.ItemsSource = null;
+            MapItems.ItemsSource = _Donors;
         }
 
         private void addXamlChildrenButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
-            // MapItems.ItemsSource = _POIManager.FetchPOIs(MainMap.Center.Position);
+            MapItems.ItemsSource = _POIManager.FetchPOIs(MainMap.Center.Position);
         }
 
+        /// Will use this to get the information.
         private void mapItemButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             var buttonSender = sender as Button;
             PointOfInterest poi = buttonSender.DataContext as PointOfInterest;
-            //rootPage.NotifyUser("PointOfInterest clicked = " + poi.DisplayName, NotifyType.StatusMessage);
+            _MainPage.NotifyUser("PointOfInterest clicked = " + poi.DisplayName, NotifyType.StatusMessage);
+
+            if (poi.Visibility == Visibility.Visible)
+            {
+                poi.Visibility = Visibility.Collapsed;
+            }
+            else
+            {
+                poi.Visibility = Visibility.Visible;
+            }
         }
 
         private async void InitializeLocationService()
@@ -96,16 +147,17 @@ namespace EBTL_Control
                         };
 
                         // Subscribe to the PositionChanged event to get location updates.
-                        geolocator.PositionChanged += OnPositionChanged;
+                        // We don't actually care about this.
+                        //geolocator.PositionChanged += OnPositionChanged;
 
                         // Subscribe to StatusChanged event to get updates of location status changes.
-                        geolocator.StatusChanged += OnStatusChanged;
+                        // Don't care about this one either.
+                        //geolocator.StatusChanged += OnStatusChanged;
 
                         //_rootPage.NotifyUser("Waiting for update...", NotifyType.StatusMessage);
                         //LocationDisabledMessage.Visibility = Visibility.Collapsed;
 
                         // Carry out the operation
-
                         Geoposition pos = await geolocator.GetGeopositionAsync().AsTask(token);
 
                         UpdateLocationData(pos);
@@ -115,8 +167,6 @@ namespace EBTL_Control
 
                     case GeolocationAccessStatus.Denied:
                         InformUserOfDeniedChoice();
-                        // Inform the user that we will use his address for location but that his decision may cost a life.
-                        // Battery before lives no?
                         break;
 
                     default:
@@ -164,7 +214,6 @@ namespace EBTL_Control
                     Altitude = pos.Coordinate.Point.Position.Altitude
                 });
 
-                // Update donor data.
                 _HospitalGeoLocation = pos;
             }
             else
@@ -248,6 +297,50 @@ namespace EBTL_Control
 
             MainMap.ZoomLevel = 12;
             _POIManager = new PointOfInterestsManager();
+
+            // Create the databinding here.
+
+            // Make a new source, to grab a new timestamp
+            _Donors = new ObservableCollection<PointOfInterest>();
         }
+
+        /// <summary>
+        /// Used to display messages to the user
+        /// </summary>
+        /// <param name="strMessage"></param>
+        /// <param name="type"></param>
+        public void NotifyUser(string strMessage, NotifyType type)
+        {
+            switch (type)
+            {
+                case NotifyType.StatusMessage:
+                    StatusBorder.Background = new SolidColorBrush(Windows.UI.Colors.Green);
+                    break;
+
+                case NotifyType.ErrorMessage:
+                    StatusBorder.Background = new SolidColorBrush(Windows.UI.Colors.Red);
+                    break;
+            }
+            StatusBlock.Text = strMessage;
+
+            // Collapse the StatusBlock if it has no text to conserve real estate.
+            StatusBorder.Visibility = (StatusBlock.Text != String.Empty) ? Visibility.Visible : Visibility.Collapsed;
+            if (StatusBlock.Text != String.Empty)
+            {
+                StatusBorder.Visibility = Visibility.Visible;
+                StatusPanel.Visibility = Visibility.Visible;
+            }
+            else
+            {
+                StatusBorder.Visibility = Visibility.Collapsed;
+                StatusPanel.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        public enum NotifyType
+        {
+            StatusMessage,
+            ErrorMessage
+        };
     }
 }

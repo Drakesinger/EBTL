@@ -1,4 +1,5 @@
-﻿using System;
+﻿using EBTL;
+using System;
 using System.Collections.Generic;
 using Windows.Devices.Geolocation;
 
@@ -50,6 +51,30 @@ namespace EBTL_Control.ViewModel
                 })
             });
             return pois;
+        }
+
+        public List<PointOfInterest> AddDonor(Donor _Donor)
+        {
+            List<PointOfInterest> pois = new List<PointOfInterest>();
+            pois.Add(new PointOfInterest(_Donor));
+            return pois;
+        }
+
+        public List<PointOfInterest> AddDonor(Donor _Donor, object itemsSource)
+        {
+            if (itemsSource != null)
+            {
+                Type _type = itemsSource.GetType();
+
+                var _lists = itemsSource as List<PointOfInterest>;
+
+                _lists.Add(new PointOfInterest(_Donor));
+                return _lists;
+            }
+            else
+            {
+                return AddDonor(_Donor);
+            }
         }
     }
 }

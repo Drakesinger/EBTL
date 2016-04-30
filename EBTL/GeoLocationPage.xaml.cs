@@ -126,13 +126,18 @@ namespace EBTL
 
         private void UpdateLocationData(Geoposition pos)
         {
-            if(pos != null)
-            { 
-            textBlock_Lat.Text = pos.Coordinate.Latitude.ToString();
-            textBlock_Long.Text = pos.Coordinate.Longitude.ToString();
+            if (pos != null)
+            {
+                textBlock_Lat.Text = pos.Coordinate.Latitude.ToString();
+                textBlock_Long.Text = pos.Coordinate.Longitude.ToString();
 
                 // Update donor data.
                 _Donor.GeoLocation = pos;
+                _Donor.GeoPoint = new Geopoint(new BasicGeoposition()
+                {
+                    Latitude = pos.Coordinate.Latitude,
+                    Longitude = pos.Coordinate.Longitude
+                });
             }
             else
             {

@@ -9,7 +9,7 @@ namespace EBTL
 {
     public class Donor
     {
-        public Donor(string Surname, string Name,string ContactNumber, string Address, string BloodType)
+        public Donor(string Surname, string Name, string ContactNumber, string Address, string BloodType)
         {
             this.Surname = Surname;
             this.Name = Name;
@@ -19,6 +19,7 @@ namespace EBTL
 
             // Check if this is how we want to do it.
             this.GeoLocation = null;
+            this.GeoPoint = null;
         }
 
         public string Surname { get; private set; }
@@ -26,6 +27,10 @@ namespace EBTL
         public string Address { get; private set; }
         public string BloodType { get; private set; }
         public Geoposition GeoLocation { get; set; }
+
+        // We need a simpler object for geopositioning.
+        public Geopoint GeoPoint { get; set; }
+
         public string EmergencyNumber { get; private set; }
     }
 }
