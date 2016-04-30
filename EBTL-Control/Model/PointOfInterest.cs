@@ -4,7 +4,7 @@ using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.UI.Xaml;
 
-namespace EBTL_Control.ViewModel
+namespace EBTL_Control.Model
 {
     public class PointOfInterest
     {

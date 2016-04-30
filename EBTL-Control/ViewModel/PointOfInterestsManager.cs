@@ -1,4 +1,5 @@
 ﻿using EBTL;
+using EBTL_Control.Model;
 using System;
 using System.Collections.Generic;
 using Windows.Devices.Geolocation;

@@ -99,8 +99,8 @@
     <Compile Include="MainPage.xaml.cs">
       <DependentUpon>MainPage.xaml</DependentUpon>
     </Compile>
-    <Compile Include="PointOfInterest.cs" />
-    <Compile Include="PointOfInterestsManager.cs" />
+    <Compile Include="Model\PointOfInterest.cs" />
+    <Compile Include="ViewModel\PointOfInterestsManager.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
@@ -135,6 +135,7 @@
       <Name>Microsoft.VCLibs.120</Name>
     </SDKReference>
   </ItemGroup>
+  <ItemGroup />
   <PropertyGroup Condition=" '$(VisualStudioVersion)' == '' or '$(VisualStudioVersion)' &lt; '14.0' ">
     <VisualStudioVersion>14.0</VisualStudioVersion>
   </PropertyGroup>

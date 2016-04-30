@@ -1,13 +1,17 @@
 ﻿using EBTL;
+using EBTL_Control.Model;
 using EBTL_Control.ViewModel;
 using System;
 using System.Collections.ObjectModel;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
+
+using Windows.Services.Maps;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Documents;   // For multiple lines of text.
 using Windows.UI.Xaml.Media;
 
 // The Blank Page item template is documented at http://go.microsoft.com/fwlink/?LinkId=402352&clcid=0x409
@@ -61,6 +65,7 @@ namespace EBTL_Control
             };
 
             AddDonorOnMap(_TempDonor);
+            //GetRouteAndDirections(tappedGeoPosition);
         }
 
         private void QueryDonors(string _Filter)
@@ -87,12 +92,137 @@ namespace EBTL_Control
         }
 
         /// Will use this to get the information.
-        private void mapItemButton_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
+        private void MapPoI_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)
         {
             var buttonSender = sender as Button;
             PointOfInterest poi = buttonSender.DataContext as PointOfInterest;
             var _poiLocation = "Lat: " + poi.Location.Position.Latitude + "\n" + poi.Location.Position.Longitude;
             _MainPage.NotifyUser("Donor Information: " + poi.DisplayName + ";\n" + poi.Address + ";\n" + _poiLocation, NotifyType.StatusMessage);
+        }
+
+        private async void SearchClosestDonor(string BloodTypeRequired)
+        {
+            var _RequestDonors = new System.Collections.Generic.List<PointOfInterest>();
+
+            foreach (var _PossibleDonor in _Donors)
+            {
+                if (_PossibleDonor.BloodType.Contains(BloodTypeRequired))
+                {
+                    _RequestDonors.Add(_PossibleDonor);
+                }
+            }
+
+            double _MinDistance = 100; // Kilometers.
+            double _MinType = 100; // Minutes.
+            PointOfInterest _ClosesestDonor = null;
+            foreach (var _Donor in _RequestDonors)
+            {
+                try
+                {
+                    MapRouteFinderResult result = await GetRouteAndDirections(_Donor.Location.Position);
+                    if (result.Status == MapRouteFinderStatus.Success)
+                    {
+                        var _EstimatedTime = result.Route.EstimatedDuration.TotalMinutes;
+                        var _Distance = (result.Route.LengthInMeters / 1000);
+
+                        if (_Distance < _MinDistance)
+                        {
+                            if (_EstimatedTime < _MinType)
+                            {
+                                // This donor may be able to come in time.
+                                _ClosesestDonor = _Donor;
+                                _MinDistance = _Distance;
+                                _MinType = _EstimatedTime;
+                            }
+                        }
+                    }
+                }
+                catch (Exception)
+                {
+                    throw;
+                }
+
+                if (_ClosesestDonor != null)
+                {
+                    _MainPage.NotifyUser("Found one:" + _ClosesestDonor.DisplayName, NotifyType.StatusMessage);
+                }
+            }
+        }
+
+        private void Search_Click(object sender, RoutedEventArgs e)
+        {
+            SearchClosestDonor("AB+");
+        }
+
+        private async Task<MapRouteFinderResult> GetRouteAndDirections(BasicGeoposition startLocation)
+        {
+            Geopoint startPoint = new Geopoint(startLocation);
+
+            Geopoint endPoint = _HospitalGeoPoint;
+
+            // Get the route between the points.
+            MapRouteFinderResult routeResult =
+                await MapRouteFinder.GetDrivingRouteAsync(
+                startPoint,
+                endPoint,
+                MapRouteOptimization.Time,
+                MapRouteRestrictions.None);
+
+            ShowRouteData(routeResult);
+
+            return routeResult;
+        }
+
+        private void ShowRouteData(MapRouteFinderResult routeResult)
+        {
+            if (routeResult.Status == MapRouteFinderStatus.Success)
+            {
+                var _EstimatedTime = routeResult.Route.EstimatedDuration.TotalMinutes;
+                var _Distance = (routeResult.Route.LengthInMeters / 1000);
+
+                {
+                    textBlock_RouteData.Text = "";
+
+                    // Display summary info about the route.
+                    textBlock_RouteData.Inlines.Add(new Run()
+                    {
+                        Text = "Total estimated time (minutes) = "
+                            + _EstimatedTime.ToString()
+                    });
+                    textBlock_RouteData.Inlines.Add(new LineBreak());
+                    textBlock_RouteData.Inlines.Add(new Run()
+                    {
+                        Text = "Total length (kilometers) = "
+                            + _Distance.ToString()
+                    });
+                    textBlock_RouteData.Inlines.Add(new LineBreak());
+                    textBlock_RouteData.Inlines.Add(new LineBreak());
+
+                    // Display the directions.
+                    textBlock_RouteData.Inlines.Add(new Run()
+                    {
+                        Text = "DIRECTIONS"
+                    });
+                    textBlock_RouteData.Inlines.Add(new LineBreak());
+
+                    foreach (MapRouteLeg leg in routeResult.Route.Legs)
+                    {
+                        foreach (MapRouteManeuver maneuver in leg.Maneuvers)
+                        {
+                            textBlock_RouteData.Inlines.Add(new Run()
+                            {
+                                Text = maneuver.InstructionText
+                            });
+                            textBlock_RouteData.Inlines.Add(new LineBreak());
+                        }
+                    }
+                }
+            }
+            else
+            {
+                textBlock_RouteData.Text =
+                                    "A problem occurred: " + routeResult.Status.ToString();
+            }
         }
 
         private async void InitializeLocationService()
