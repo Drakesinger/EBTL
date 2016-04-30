@@ -154,6 +154,12 @@ namespace EBTL_Control
             SearchClosestDonor("AB+");
         }
 
+        /// <summary>
+        /// Ask the Windows Maps service for the route and directions.
+        /// </summary>
+        /// <param name="startLocation"></param>
+        /// <seealso cref="https://msdn.microsoft.com/en-us/library/windows/apps/xaml/dn631250.aspx"/>
+        /// <returns></returns>
         private async Task<MapRouteFinderResult> GetRouteAndDirections(BasicGeoposition startLocation)
         {
             Geopoint startPoint = new Geopoint(startLocation);
