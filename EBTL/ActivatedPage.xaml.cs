@@ -17,9 +17,16 @@ namespace EBTL
     /// </summary>
     public sealed partial class ActivatedPage : Page
     {
+        private static ActivatedPage _MainPage;
+
+        /// <summary>
+        /// The page that gets called after the user has suscribed.
+        /// </summary>
         public ActivatedPage()
         {
             this.InitializeComponent();
+
+            _MainPage = this;
             Initialize();
         }
 
@@ -51,6 +58,8 @@ namespace EBTL
                     return;
                 }
 
+                // TODO This is where we can handle the notification input.
+                validateStep1(toastArgs.UserInput);
                 //switch (stepsControl.Step)
                 //{
                 //    case 1:
@@ -78,6 +87,18 @@ namespace EBTL
             //{
             //    stepsControl.Step = int.MaxValue;
             //}
+        }
+
+        private void appBarButton_Settings_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void appBarButton_Yes_Click(object sender, RoutedEventArgs e)
+        {
+        }
+
+        private void appBarButton_No_Click(object sender, RoutedEventArgs e)
+        {
         }
     }
 }
