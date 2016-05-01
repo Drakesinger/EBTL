@@ -1,4 +1,5 @@
-﻿using EBTL;
+﻿using BackgroundTasks.Helpers;
+using EBTL;
 using EBTL_Control.Model;
 using EBTL_Control.ViewModel;
 using System;
@@ -9,6 +10,7 @@ using Windows.Devices.Geolocation;
 
 using Windows.Services.Maps;
 using Windows.UI.Core;
+using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;   // For multiple lines of text.
@@ -32,6 +34,8 @@ namespace EBTL_Control
         private Geopoint _HospitalGeoPoint;
         private PointOfInterestsManager _POIManager;
 
+        private string NotificationPayload;
+
         // Will be bound to MapItems.ItemsSource;
         public ObservableCollection<PointOfInterest> _Donors { get; private set; }
 
@@ -44,6 +48,7 @@ namespace EBTL_Control
             _MainPage = this;
 
             InitializeLocationService();
+            SetupNotificationContent();
 
             MainMap.Loaded += MainMapLoaded;
             MainMap.MapTapped += MainMap_MapTapped;
@@ -142,11 +147,46 @@ namespace EBTL_Control
                     throw;
                 }
 
-                if (_ClosesestDonor != null)
-                {
-                    _MainPage.NotifyUser("Found one:" + _ClosesestDonor.DisplayName, NotifyType.StatusMessage);
-                }
+                
             }
+
+            if (_ClosesestDonor != null)
+            {
+                _MainPage.NotifyUser("Found one:" + _ClosesestDonor.DisplayName, NotifyType.StatusMessage);
+                // Launch notification?
+                LaunchNotification(_ClosesestDonor);
+                
+            }
+        }
+
+        private async void LaunchNotification(PointOfInterest _FoundDonor)
+        {
+            // TODO ... App to App service to send data to EBTL Client application.
+            ToastNotificationManager.History.Clear();
+            //ToastHelper.PopCustomToast(NotificationPayload);
+
+            // https://blogs.msdn.microsoft.com/tiles_and_toasts/2015/07/08/quickstart-sending-a-local-toast-notification-and-handling-activations-from-it-windows-10/
+            // http://stackoverflow.com/questions/36068229/uwp-how-do-a-process-buttons-displayed-in-a-toast-that-are-launched-from-a-backg
+            // http://fr.slideshare.net/shahedC3000/deeper-into-windows-10-development
+            // https://blogs.msdn.microsoft.com/tiles_and_toasts/2015/07/02/adaptive-and-interactive-toast-notifications-for-windows-10/
+            
+            // This is the correct one.
+            string BingMapsURI = @"bingmaps:?rtp=~pos." + _FoundDonor.Location.Position.Latitude.ToString()  + "_"  + _FoundDonor.Location.Position.Longitude.ToString();
+            // Also correct.
+            string DriveToURI = @"ms-drive-to:?destination.latitude=" + _FoundDonor.Location.Position.Latitude.ToString() + "&destination.longitude=" + _FoundDonor.Location.Position.Longitude.ToString();
+
+            // Center on New York City
+            var uriNewYork = new Uri(DriveToURI);
+
+            // Launch the Windows Maps app
+            var launcherOptions = new Windows.System.LauncherOptions();
+            launcherOptions.TargetApplicationPackageFamilyName = "Microsoft.WindowsMaps_8wekyb3d8bbwe";
+            var success = await Windows.System.Launcher.LaunchUriAsync(uriNewYork, launcherOptions);
+            //if (success)
+            //{
+            //    _MainPage.NotifyUser(success.ToString(), NotifyType.StatusMessage);
+            //}
+
         }
 
         private void Search_Click(object sender, RoutedEventArgs e)
@@ -469,5 +509,33 @@ namespace EBTL_Control
             StatusMessage,
             ErrorMessage
         };
+
+        private void SetupNotificationContent()
+        {
+            // Pop notifications
+            NotificationPayload =
+                $@"
+                <toast activationType='foreground' launch='args'>
+                    <visual>
+                        <binding template='ToastGeneric'>
+                            <text>Action - text</text>
+                            <text>Make sure left button on the toast has the text ""ok"" on it, and the right button has the text ""cancel"" on it.</text>
+                        </binding>
+                    </visual>
+                    <actions>
+
+                        <action
+                            content='ok'
+                            activationType='foreground'
+                            arguments='check'/>
+
+                        <action
+                            content='cancel'
+                            activationType='foreground'
+                            arguments='cancel'/>
+
+                    </actions>
+                </toast>";
+        }
     }
 }
