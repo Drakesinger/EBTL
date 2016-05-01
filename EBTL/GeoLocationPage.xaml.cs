@@ -2,6 +2,7 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
+using Windows.Storage;
 using Windows.UI.Core;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
@@ -24,6 +25,62 @@ namespace EBTL
         public GeoLocationPage()
         {
             this.InitializeComponent();
+            InitializeLocalSettings();
+        }
+
+        private void InitializeLocalSettings()
+        {
+            ActivatedPage.localSettings = ApplicationData.Current.LocalSettings;
+            ActivatedPage.localFolder = ApplicationData.Current.LocalFolder;
+        }
+
+        private void WriteSettings(AppStatus _AppStatus)
+        {
+            switch (_AppStatus)
+            {
+                case AppStatus.LocationEnabled:
+
+                    ActivatedPage.localSettings.Values["AppConfigured"] = "1";
+                    ActivatedPage.localSettings.Values["LocationEnabled"] = "1";
+                    ActivatedPage.localSettings.Values["UseAddressAsLocation"] = "0";
+                    ActivatedPage.localSettings.Values["PageToOpen"] = "ActivatedPage";
+
+                    WriteDonorData();
+
+                    break;
+
+                case AppStatus.LocationDisabled:
+
+                    ActivatedPage.localSettings.Values["AppConfigured"] = "1";
+                    ActivatedPage.localSettings.Values["LocationEnabled"] = "0";
+                    ActivatedPage.localSettings.Values["UseAddressAsLocation"] = "1";
+                    ActivatedPage.localSettings.Values["PageToOpen"] = "ActivatedPage";
+
+                    WriteDonorData();
+
+                    break;
+
+                case AppStatus.LocationUnknown:
+
+                    ActivatedPage.localSettings.Values["AppConfigured"] = "0";
+                    ActivatedPage.localSettings.Values["LocationEnabled"] = "0";
+                    ActivatedPage.localSettings.Values["UseAddressAsLocation"] = "0";
+                    ActivatedPage.localSettings.Values["PageToOpen"] = "MainPage";
+
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        private void WriteDonorData()
+        {
+            ActivatedPage.localSettings.Values["Donor.BloodType"] = _Donor.BloodType;
+            ActivatedPage.localSettings.Values["Donor.EmergencyNumber"] = _Donor.EmergencyNumber;
+            ActivatedPage.localSettings.Values["Donor.Address"] = _Donor.Address;
+            ActivatedPage.localSettings.Values["Donor.Name"] = _Donor.Name;
+            ActivatedPage.localSettings.Values["Donor.Surname"] = _Donor.Surname;
         }
 
         private async void InitializeGeoLocation(ToggleSwitch _Sender)
@@ -76,6 +133,9 @@ namespace EBTL
                         UpdateLocationData(pos);
                         // _rootPage.NotifyUser("Location updated.", NotifyType.StatusMessage);
 
+                        // The app has been configured.
+
+                        WriteSettings(AppStatus.LocationEnabled);
                         break;
 
                     case GeolocationAccessStatus.Denied:
@@ -112,6 +172,7 @@ namespace EBTL
 
         private void InformUserOfUnspecifiedChoice()
         {
+            WriteSettings(AppStatus.LocationUnknown);
             LocationDisabledMessage.Visibility = Visibility.Visible;
         }
 
@@ -119,6 +180,7 @@ namespace EBTL
         {
             //throw new NotImplementedException();
             // Use address as location.
+            WriteSettings(AppStatus.LocationDisabled);
 
             // Set the link to settings to visible.
             LocationDisabledMessage.Visibility = Visibility.Visible;
@@ -237,6 +299,13 @@ namespace EBTL
             {
                 stackPanel_Setup.Visibility = Visibility.Collapsed;
             }
+        }
+
+        private enum AppStatus
+        {
+            LocationEnabled,
+            LocationDisabled,
+            LocationUnknown,
         }
     }
 }

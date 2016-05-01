@@ -76,7 +76,21 @@ namespace EBTL
                 // When the navigation stack isn't restored navigate to the first page,
                 // configuring the new page by passing required information as a navigation
                 // parameter
-                rootFrame.Navigate(typeof(MainPage), e.Arguments);
+
+                // We should check if the app has been configured before.
+                // Simple setting
+
+                var localSettings = Windows.Storage.ApplicationData.Current.LocalSettings;
+                var value = localSettings.Values["AppConfigured"] as string;
+
+                if (value != null && value.Contains("1"))
+                {
+                    rootFrame.Navigate(typeof(ActivatedPage), e.Arguments);
+                }
+                else
+                {
+                    rootFrame.Navigate(typeof(MainPage), e.Arguments);
+                }
             }
             // Ensure the current window is active
             Window.Current.Activate();
