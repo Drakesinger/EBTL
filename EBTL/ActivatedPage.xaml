@@ -13,7 +13,7 @@
             <TextBlock x:Name="textBlock_AppStatus" TextWrapping="Wrap" Text="The app has been activated." Margin="5,10" TextAlignment="Center" />
             <AppBarButton x:Name="appBarButton_Settings" HorizontalAlignment="Stretch" Icon="Setting" Label="Settings" VerticalAlignment="Stretch" Width="Auto" Click="appBarButton_Settings_Click" />
             <TextBlock x:Name="textBlock_Info" TextWrapping="Wrap" Text="In case of an emergency you will receive a notification if you are the closest person to the hospital." TextAlignment="Center" Margin="0,5,0,20" />
-            <StackPanel x:Name="PanelEmergency">
+            <StackPanel x:Name="PanelEmergency" Visibility="Collapsed">
                 <TextBlock x:Name="textBlock_Emergency" TextWrapping="Wrap" Text="Someone is in need of help!" TextAlignment="Center" FontWeight="Bold" Foreground="#FFD43030" FontSize="18" />
                 <TextBlock x:Name="textBlock_Question" TextWrapping="Wrap" Text="Can you come to the hospital?" TextAlignment="Center" />
                 <Grid>
@@ -28,7 +28,7 @@
                     <AppBarButton x:Name="appBarButton_No" Icon="Cancel" Label="No" Grid.Column="1" HorizontalAlignment="Center" VerticalAlignment="Center" Click="appBarButton_No_Click" />
                 </Grid>
             </StackPanel>
-            <StackPanel x:Name="StatusPanel" Orientation="Vertical" RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignLeftWithPanel="True" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="200">
+            <StackPanel x:Name="StatusPanel" Orientation="Vertical" RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignLeftWithPanel="True" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="200" Visibility="Collapsed">
                 <TextBlock x:Name="StatusLabel" Margin="10,0,0,10" TextWrapping="Wrap" Text="Status:" />
                 <Border x:Name="StatusBorder" Margin="0,0,0,0">
                     <ScrollViewer VerticalScrollMode="Auto"  VerticalScrollBarVisibility="Auto" MaxHeight="200">

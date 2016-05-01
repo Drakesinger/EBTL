@@ -1,6 +1,9 @@
 ﻿using BackgroundTasks.Helpers;
 using System;
+using System.Linq;
+using System.Threading.Tasks;
 using Windows.ApplicationModel.Activation;
+using Windows.ApplicationModel.Background;
 using Windows.ApplicationModel.Core;
 using Windows.Foundation.Collections;
 using Windows.Storage;
@@ -24,6 +27,8 @@ namespace EBTL
         public static StorageFolder localFolder { get; set; }
         public static ApplicationDataContainer localSettings { get; set; }
 
+        private static readonly string BACKGROUND_ENTRY_POINT = typeof(BackgroundTasks.ToastActivationTypeBackgroundClosedTask).FullName;
+
         /// <summary>
         /// The page that gets called after the user has suscribed.
         /// </summary>
@@ -33,7 +38,58 @@ namespace EBTL
 
             _MainPage = this;
             Initialize();
+            InitializeBackgroundCommunication();
         }
+
+        #region BackgroundTasks
+
+        private async void InitializeBackgroundCommunication()
+        {
+            // Register background task
+            if (!await RegisterBackgroundTask())
+            {
+                await new MessageDialog("ERROR: Couldn't register background task.").ShowAsync();
+                return;
+            }
+        }
+
+        private async Task<bool> RegisterBackgroundTask()
+        {
+            // Unregister any previous exising background task
+            UnregisterBackgroundTask();
+
+            // Request access
+            BackgroundAccessStatus status = await BackgroundExecutionManager.RequestAccessAsync();
+
+            // If denied
+            if (status != BackgroundAccessStatus.AllowedMayUseActiveRealTimeConnectivity && status != BackgroundAccessStatus.AllowedWithAlwaysOnRealTimeConnectivity)
+                return false;
+
+            // Construct the background task
+            BackgroundTaskBuilder builder = new BackgroundTaskBuilder()
+            {
+                Name = BACKGROUND_ENTRY_POINT,
+                TaskEntryPoint = BACKGROUND_ENTRY_POINT
+            };
+
+            // Set trigger for Toast History Changed
+            builder.SetTrigger(new ToastNotificationActionTrigger());
+
+            // And register the background task
+            BackgroundTaskRegistration registration = builder.Register();
+
+            return true;
+        }
+
+        private static void UnregisterBackgroundTask()
+        {
+            var task = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(i => i.Name.Equals(BACKGROUND_ENTRY_POINT));
+
+            if (task != null)
+                task.Unregister(true);
+        }
+
+        #endregion BackgroundTasks
 
         private void Initialize()
         {
@@ -87,11 +143,11 @@ namespace EBTL
                 Error("Expected a user input value for 'message', but there was none.");
             else if (!(result["message"] as string).Equals("Windows 10"))
                 Error("User input value for 'message' was not 'Windows 10'");
-
-            //else
-            //{
-            //    stepsControl.Step = int.MaxValue;
-            //}
+            else
+            {
+                //stepsControl.Step = int.MaxValue;
+                PanelEmergency.Visibility = Visibility.Visible;
+            }
         }
 
         private void appBarButton_Settings_Click(object sender, RoutedEventArgs e)

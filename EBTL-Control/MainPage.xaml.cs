@@ -4,13 +4,16 @@ using EBTL_Control.Model;
 using EBTL_Control.ViewModel;
 using System;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Background;
 using Windows.Devices.Geolocation;
 
 using Windows.Services.Maps;
 using Windows.UI.Core;
 using Windows.UI.Notifications;
+using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Documents;   // For multiple lines of text.
@@ -25,6 +28,8 @@ namespace EBTL_Control
     /// </summary>
     public sealed partial class MainPage : Page
     {
+        #region Attributes
+
         public static MainPage _MainPage;
 
         private CancellationTokenSource _cts;
@@ -36,10 +41,29 @@ namespace EBTL_Control
 
         private string NotificationPayload;
 
-        // Will be bound to MapItems.ItemsSource;
+        // Should be bound to MapItems.ItemsSource, but it cannot.
         public ObservableCollection<PointOfInterest> _Donors { get; private set; }
 
-        //private List<PointOfInterest> _Donors;
+        private static readonly string BACKGROUND_ENTRY_POINT = typeof(BackgroundTasks.ToastActivationTypeBackgroundClosedTask).FullName;
+
+        #endregion Attributes
+
+        #region ENUMS
+
+        public enum NotifyType
+        {
+            StatusMessage,
+            ErrorMessage
+        };
+
+        private enum PayloadType
+        {
+            Pop,
+            BackgroundAppClosed,
+            Protocol
+        }
+
+        #endregion ENUMS
 
         public MainPage()
         {
@@ -48,10 +72,188 @@ namespace EBTL_Control
             _MainPage = this;
 
             InitializeLocationService();
-            SetupNotificationContent();
+            SetupNotificationContent(PayloadType.BackgroundAppClosed);
+            InitializeBackgroundCommunication();
 
             MainMap.Loaded += MainMapLoaded;
             MainMap.MapTapped += MainMap_MapTapped;
+        }
+
+        #region BackgroundTasks
+
+        private async void InitializeBackgroundCommunication()
+        {
+            // Register background task
+            if (!await RegisterBackgroundTask())
+            {
+                await new MessageDialog("ERROR: Couldn't register background task.").ShowAsync();
+                return;
+            }
+        }
+
+        private async Task<bool> RegisterBackgroundTask()
+        {
+            // Unregister any previous exising background task
+            UnregisterBackgroundTask();
+
+            // Request access
+            BackgroundAccessStatus status = await BackgroundExecutionManager.RequestAccessAsync();
+
+            // If denied
+            if (status != BackgroundAccessStatus.AllowedMayUseActiveRealTimeConnectivity && status != BackgroundAccessStatus.AllowedWithAlwaysOnRealTimeConnectivity)
+                return false;
+
+            // Construct the background task
+            BackgroundTaskBuilder builder = new BackgroundTaskBuilder()
+            {
+                Name = BACKGROUND_ENTRY_POINT,
+                TaskEntryPoint = BACKGROUND_ENTRY_POINT
+            };
+
+            // Set trigger for Toast History Changed
+            builder.SetTrigger(new ToastNotificationActionTrigger());
+
+            // And register the background task
+            BackgroundTaskRegistration registration = builder.Register();
+
+            return true;
+        }
+
+        private static void UnregisterBackgroundTask()
+        {
+            var task = BackgroundTaskRegistration.AllTasks.Values.FirstOrDefault(i => i.Name.Equals(BACKGROUND_ENTRY_POINT));
+
+            if (task != null)
+                task.Unregister(true);
+        }
+
+        #endregion BackgroundTasks
+
+        #region NotificationService
+
+        private async void LaunchNotification(PointOfInterest _FoundDonor)
+        {
+            // TODO ... App to App service to send data to EBTL Client application.
+            ToastNotificationManager.History.Clear();
+            ToastHelper.PopCustomToast(NotificationPayload);
+
+            ///////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////////
+            //////////////////////  HERE      /////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////////
+            ///////////////////////////////////////////////////////////////////////////////
+
+            // https://blogs.msdn.microsoft.com/tiles_and_toasts/2015/07/08/quickstart-sending-a-local-toast-notification-and-handling-activations-from-it-windows-10/
+            // http://stackoverflow.com/questions/36068229/uwp-how-do-a-process-buttons-displayed-in-a-toast-that-are-launched-from-a-backg
+            // http://fr.slideshare.net/shahedC3000/deeper-into-windows-10-development
+            // https://blogs.msdn.microsoft.com/tiles_and_toasts/2015/07/02/adaptive-and-interactive-toast-notifications-for-windows-10/
+
+            // This is the correct one.
+            string BingMapsURI = @"bingmaps:?rtp=~pos." + _FoundDonor.Location.Position.Latitude.ToString() + "_" + _FoundDonor.Location.Position.Longitude.ToString();
+            // Also correct.
+            string DriveToURI = @"ms-drive-to:?destination.latitude=" + _FoundDonor.Location.Position.Latitude.ToString() + "&destination.longitude=" + _FoundDonor.Location.Position.Longitude.ToString();
+        }
+
+        private async void LaunchMaps(string DriveToURI)
+        {
+            // Center on New York City
+            var uriNewYork = new Uri(DriveToURI);
+
+            // Launch the Windows Maps app
+            var launcherOptions = new Windows.System.LauncherOptions();
+            launcherOptions.TargetApplicationPackageFamilyName = "Microsoft.WindowsMaps_8wekyb3d8bbwe";
+            var success = await Windows.System.Launcher.LaunchUriAsync(uriNewYork, launcherOptions);
+            //if (success)
+            //{
+            //    _MainPage.NotifyUser(success.ToString(), NotifyType.StatusMessage);
+            //}
+        }
+
+        private void SetupNotificationContent(PayloadType _Type)
+        {
+            switch (_Type)
+            {
+                case PayloadType.Pop:
+                    // Pop notifications
+                    NotificationPayload =
+                        $@"
+                <toast activationType='foreground' launch='args'>
+                    <visual>
+                        <binding template='ToastGeneric'>
+                            <text>Action - text</text>
+                            <text>Make sure left button on the toast has the text ""ok"" on it, and the right button has the text ""cancel"" on it.</text>
+                        </binding>
+                    </visual>
+                    <actions>
+
+                        <action
+                            content='ok'
+                            activationType='foreground'
+                            arguments='check'/>
+
+                        <action
+                            content='cancel'
+                            activationType='foreground'
+                            arguments='cancel'/>
+
+                    </actions>
+                </toast>";
+                    break;
+
+                case PayloadType.BackgroundAppClosed:
+                    NotificationPayload =
+                $@"
+                <toast activationType='background' launch='args'>
+                    <visual>
+                        <binding template='ToastGeneric'>
+                            <text>Background with App Closed</text>
+                            <text>Ensure the app is closed. Make sure ""Windows 10"" is in the first text box. Press ""submit"".</text>
+                        </binding>
+                    </visual>
+                    <actions>
+
+                        <input
+                            id = 'message'
+                            type = 'text'
+                            title = 'Message'
+                            placeHolderContent = 'Enter ""Windows 10""'
+                            defaultInput = 'Windows 10' />
+
+                        <action activationType = 'background'
+                                arguments = 'quickReply'
+                                content = 'submit' />
+
+                        <action activationType = 'background'
+                                arguments = 'cancel'
+                                content = 'cancel' />
+
+                    </actions>
+                </toast>";
+                    break;
+
+                case PayloadType.Protocol:
+                    break;
+
+                default:
+                    break;
+            }
+        }
+
+        #endregion NotificationService
+
+        #region MapFunctions
+
+        private void MainMapLoaded(object sender, RoutedEventArgs e)
+        {
+            MainMap.Center = _HospitalGeoPoint;
+
+            MainMap.ZoomLevel = 12;
+            _POIManager = new PointOfInterestsManager();
+
+            // Create the databinding here.
+
+            // Make a new source, to grab a new timestamp
+            _Donors = new ObservableCollection<PointOfInterest>();
         }
 
         private void MainMap_MapTapped(Windows.UI.Xaml.Controls.Maps.MapControl sender, Windows.UI.Xaml.Controls.Maps.MapInputEventArgs args)
@@ -105,6 +307,10 @@ namespace EBTL_Control
             _MainPage.NotifyUser("Donor Information: " + poi.DisplayName + ";\n" + poi.Address + ";\n" + _poiLocation, NotifyType.StatusMessage);
         }
 
+        #endregion MapFunctions
+
+        #region SearchFunctions
+
         private async void SearchClosestDonor(string BloodTypeRequired)
         {
             var _RequestDonors = new System.Collections.Generic.List<PointOfInterest>();
@@ -146,8 +352,6 @@ namespace EBTL_Control
                 {
                     throw;
                 }
-
-                
             }
 
             if (_ClosesestDonor != null)
@@ -155,44 +359,17 @@ namespace EBTL_Control
                 _MainPage.NotifyUser("Found one:" + _ClosesestDonor.DisplayName, NotifyType.StatusMessage);
                 // Launch notification?
                 LaunchNotification(_ClosesestDonor);
-                
             }
-        }
-
-        private async void LaunchNotification(PointOfInterest _FoundDonor)
-        {
-            // TODO ... App to App service to send data to EBTL Client application.
-            ToastNotificationManager.History.Clear();
-            //ToastHelper.PopCustomToast(NotificationPayload);
-
-            // https://blogs.msdn.microsoft.com/tiles_and_toasts/2015/07/08/quickstart-sending-a-local-toast-notification-and-handling-activations-from-it-windows-10/
-            // http://stackoverflow.com/questions/36068229/uwp-how-do-a-process-buttons-displayed-in-a-toast-that-are-launched-from-a-backg
-            // http://fr.slideshare.net/shahedC3000/deeper-into-windows-10-development
-            // https://blogs.msdn.microsoft.com/tiles_and_toasts/2015/07/02/adaptive-and-interactive-toast-notifications-for-windows-10/
-            
-            // This is the correct one.
-            string BingMapsURI = @"bingmaps:?rtp=~pos." + _FoundDonor.Location.Position.Latitude.ToString()  + "_"  + _FoundDonor.Location.Position.Longitude.ToString();
-            // Also correct.
-            string DriveToURI = @"ms-drive-to:?destination.latitude=" + _FoundDonor.Location.Position.Latitude.ToString() + "&destination.longitude=" + _FoundDonor.Location.Position.Longitude.ToString();
-
-            // Center on New York City
-            var uriNewYork = new Uri(DriveToURI);
-
-            // Launch the Windows Maps app
-            var launcherOptions = new Windows.System.LauncherOptions();
-            launcherOptions.TargetApplicationPackageFamilyName = "Microsoft.WindowsMaps_8wekyb3d8bbwe";
-            var success = await Windows.System.Launcher.LaunchUriAsync(uriNewYork, launcherOptions);
-            //if (success)
-            //{
-            //    _MainPage.NotifyUser(success.ToString(), NotifyType.StatusMessage);
-            //}
-
         }
 
         private void Search_Click(object sender, RoutedEventArgs e)
         {
             SearchClosestDonor("AB+");
         }
+
+        #endregion SearchFunctions
+
+        #region BingMapService
 
         /// <summary>
         /// Ask the Windows Maps service for the route and directions.
@@ -270,6 +447,10 @@ namespace EBTL_Control
                                     "A problem occurred: " + routeResult.Status.ToString();
             }
         }
+
+        #endregion BingMapService
+
+        #region GeoLocationService
 
         private async void InitializeLocationService()
         {
@@ -458,18 +639,9 @@ namespace EBTL_Control
             });
         }
 
-        private void MainMapLoaded(object sender, RoutedEventArgs e)
-        {
-            MainMap.Center = _HospitalGeoPoint;
+        #endregion GeoLocationService
 
-            MainMap.ZoomLevel = 12;
-            _POIManager = new PointOfInterestsManager();
-
-            // Create the databinding here.
-
-            // Make a new source, to grab a new timestamp
-            _Donors = new ObservableCollection<PointOfInterest>();
-        }
+        #region StatusNotifications
 
         /// <summary>
         /// Used to display messages to the user
@@ -504,42 +676,6 @@ namespace EBTL_Control
             }
         }
 
-        public enum NotifyType
-        {
-            StatusMessage,
-            ErrorMessage
-        };
-
-        private void SetupNotificationContent()
-        {
-            // Pop notifications
-            NotificationPayload =
-                $@"
-                <toast activationType='foreground' launch='args'>
-                    <visual>
-                        <binding template='ToastGeneric'>
-                            <text>Action - text</text>
-                            <text>Make sure left button on the toast has the text ""ok"" on it, and the right button has the text ""cancel"" on it.</text>
-                        </binding>
-                    </visual>
-                    <actions>
-
-                        <action
-                            content='ok'
-                            activationType='foreground'
-                            arguments='check'/>
-
-                        <action
-                            content='cancel'
-                            activationType='foreground'
-                            arguments='cancel'/>
-
-                    </actions>
-                </toast>";
-        }
-
-        
-        
-
+        #endregion StatusNotifications
     }
 }
