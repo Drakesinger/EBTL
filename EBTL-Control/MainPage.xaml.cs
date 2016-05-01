@@ -257,22 +257,7 @@ namespace EBTL_Control
             // Make a new source, to grab a new timestamp
             _Donors = new ObservableCollection<PointOfInterest>();
 
-            using (var db = new EBTLContext())
-            {
-                DBDonors = db.DonorsDB.ToList();
-            }
-        }
-
-        private void WriteToDB()
-        {
-            using (var db = new EBTLContext())
-            {
-                var blog = new DonorDB { BloodType = "AB+" };
-                db.DonorsDB.Add(blog);
-                db.SaveChanges();
-
-                DBDonors = db.DonorsDB.ToList();
-            }
+            ReadDB();
         }
 
         private void MainMap_MapTapped(Windows.UI.Xaml.Controls.Maps.MapControl sender, Windows.UI.Xaml.Controls.Maps.MapInputEventArgs args)
@@ -696,5 +681,29 @@ namespace EBTL_Control
         }
 
         #endregion StatusNotifications
+
+        #region DBReadAndWrite
+
+        private void ReadDB()
+        {
+            using (var db = new EBTLContext())
+            {
+                DBDonors = db.DonorsDB.ToList();
+            }
+        }
+
+        private void WriteToDB()
+        {
+            using (var db = new EBTLContext())
+            {
+                var blog = new DonorDB { BloodType = "AB+" };
+                db.DonorsDB.Add(blog);
+                db.SaveChanges();
+
+                DBDonors = db.DonorsDB.ToList();
+            }
+        }
+
+        #endregion DBReadAndWrite
     }
 }
