@@ -22,13 +22,13 @@ In case of an emergency, the emergency services use the desktop application to l
 A (universal) desktop app used by the emergency services:
 * [x]  Shows a map
 * [x]  Active geo-fenced phones are shown on the map
-* [x]  Clicking on a geo-fence shows information about that person
+* [ ]  Clicking on a geo-fence shows information about that person
 * [x]  Search for a specific blood-type
      * [ ] In an specified area radius
-* [ ]  Launch an alert for a blood-type
+* [x]  Launch an alert for a blood-type
 
 A (universal) desktop app used by volunteers:
-* [ ] Allows to subscribe with the following information:
+* [x] Allows to subscribe with the following information:
     * [x] Name
     * [x] Surname
     * [x] Address
@@ -38,7 +38,15 @@ A (universal) desktop app used by volunteers:
 ### Optional Features
 
 Communication between the emergency and user application:
-* [ ] Send notifications (a modal pop-up)
-* [ ] Asks the user if he aggrees with sending real-time geo-location data to the server
-* [ ] Update the database with the new location of the user    
+* [x] Send notifications (a modal pop-up)
+* [x] Launch BINGMaps directly after notification has been received
+* [ ] Asks the user if he agrees with sending real-time geo-location data to the server
+* [x] Update the database with the new location of the user    
 * [ ] Mobile App for users (Xamarin for cross platform)
+
+### Issues
+
+Toast notification sending between apps requires a WNS service. Installation of the Azure Service nugget fails.
+Code to use and implement this functionality has been written regardless.
+Tried using app-service Communication to send data about users that subscribed directly to the EBTL-Control app. It fails for unknown reasons.
+The Configuration screen that shows after the EBTL app has already been launched doesn't do anything.
