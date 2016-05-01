@@ -1,12 +1,11 @@
 ﻿using Microsoft.Data.Entity;
-using System.Collections.Generic;
 using Windows.Devices.Geolocation;
 
 namespace EBLT_Control
 {
     public class EBTLContext : DbContext
     {
-        public DbSet<Donor> Blogs { get; set; }
+        public DbSet<DonorDB> DonorsDB { get; set; }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
         {
@@ -16,20 +15,25 @@ namespace EBLT_Control
         // Will see
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
+            // Make BlogDonor.BloodType required
+            modelBuilder.Entity<DonorDB>()
+                .Property(b => b.BloodType)
+                .IsRequired();
         }
     }
 
-    public class Donor
+    public class DonorDB
     {
-        public string Surname { get; private set; }
-        public string Name { get; private set; }
-        public string Address { get; private set; }
-        public string BloodType { get; private set; }
+        public int ID { get; set; }
+        public string Surname { get; set; }
+        public string Name { get; set; }
+        public string Address { get; set; }
+        public string BloodType { get; set; }
         public Geoposition GeoLocation { get; set; }
 
         // We need a simpler object for geopositioning.
         public Geopoint GeoPoint { get; set; }
 
-        public string EmergencyNumber { get; private set; }
+        public string EmergencyNumber { get; set; }
     }
 }

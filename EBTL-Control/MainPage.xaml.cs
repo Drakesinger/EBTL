@@ -1,15 +1,16 @@
 ﻿using BackgroundTasks.Helpers;
-using EBTL;
+using EBLT_Control;
+
 using EBTL_Control.Model;
 using EBTL_Control.ViewModel;
 using System;
+using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
 using Windows.ApplicationModel.Background;
 using Windows.Devices.Geolocation;
-
 using Windows.Services.Maps;
 using Windows.UI.Core;
 using Windows.UI.Notifications;
@@ -45,6 +46,7 @@ namespace EBTL_Control
         public ObservableCollection<PointOfInterest> _Donors { get; private set; }
 
         private static readonly string BACKGROUND_ENTRY_POINT = typeof(BackgroundTasks.ToastActivationTypeBackgroundClosedTask).FullName;
+        private List<DonorDB> DBDonors;
 
         #endregion Attributes
 
@@ -254,6 +256,23 @@ namespace EBTL_Control
 
             // Make a new source, to grab a new timestamp
             _Donors = new ObservableCollection<PointOfInterest>();
+
+            using (var db = new EBTLContext())
+            {
+                DBDonors = db.DonorsDB.ToList();
+            }
+        }
+
+        private void WriteToDB()
+        {
+            using (var db = new EBTLContext())
+            {
+                var blog = new DonorDB { BloodType = "AB+" };
+                db.DonorsDB.Add(blog);
+                db.SaveChanges();
+
+                DBDonors = db.DonorsDB.ToList();
+            }
         }
 
         private void MainMap_MapTapped(Windows.UI.Xaml.Controls.Maps.MapControl sender, Windows.UI.Xaml.Controls.Maps.MapInputEventArgs args)

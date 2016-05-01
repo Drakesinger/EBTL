@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using Windows.Devices.Geolocation;
 
-namespace EBTL
+namespace EBTL_Control
 {
     public class Donor
     {

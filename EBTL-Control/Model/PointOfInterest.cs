@@ -1,5 +1,4 @@
-﻿using EBTL;
-using System;
+﻿using System;
 using Windows.Devices.Geolocation;
 using Windows.Foundation;
 using Windows.UI.Xaml;

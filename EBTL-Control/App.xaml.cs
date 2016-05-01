@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.Data.Entity;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
@@ -30,6 +31,11 @@ namespace EBTL_Control
         {
             this.InitializeComponent();
             this.Suspending += OnSuspending;
+
+            using (var db = new EBLT_Control.EBTLContext())
+            {
+                db.Database.Migrate();
+            }
         }
 
         /// <summary>
@@ -84,7 +90,7 @@ namespace EBTL_Control
         /// </summary>
         /// <param name="sender">The Frame which failed navigation</param>
         /// <param name="e">Details about the navigation failure</param>
-        void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
+        private void OnNavigationFailed(object sender, NavigationFailedEventArgs e)
         {
             throw new Exception("Failed to load Page " + e.SourcePageType.FullName);
         }
