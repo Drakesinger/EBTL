@@ -114,7 +114,10 @@
     <None Include="EBTL-Control_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Blood.png" />
+    <Content Include="Assets\Man-03.png" />
     <Content Include="Assets\mappin.png" />
+    <Content Include="Assets\User.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

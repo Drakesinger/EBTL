@@ -9,15 +9,19 @@
     x:Class="EBTL_Control.MainPage"
     mc:Ignorable="d">
 
-    <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
-        <Maps:MapControl x:Name="MainMap" MapServiceToken="token">
+    <Grid Background="Black">
+        <StackPanel Orientation="Horizontal" Height="32" HorizontalAlignment="Center" VerticalAlignment="Top">
+            <Button x:Name="Search" Click="Search_Click" Content="Search for :" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" Background="Transparent" Foreground="White" BorderBrush="Gray" />
+            <TextBox x:Name="bloodtype" TextWrapping="Wrap" Text="AB+" Foreground="White" BorderBrush="Transparent" Background="Transparent" />
+        </StackPanel>
+        <Maps:MapControl x:Name="MainMap" MapServiceToken="token" Margin="0,32,0,0">
             <!-- Will contain the XAML pins representing donors.-->
             <Maps:MapItemsControl x:Name="MapItems">
                 <Maps:MapItemsControl.ItemTemplate>
-                    <DataTemplate x:DataType="poi:PointOfInterest">
-                        <Button x:Name="mapItemButton" Click="MapPoI_Click" Background="Transparent">
+                    <DataTemplate>
+                        <Button x:Name="mapItemButton" Click="MapPoI_Click">
                             <StackPanel>
-                                <Border Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
+                                <Border Background="White" Visibility="Visible">
                                     <TextBlock Text="{Binding DisplayName}" />
                                 </Border>
 
@@ -28,7 +32,7 @@
                                         </TransitionCollection>
                                     </Image.Transitions>
                                 </Image>
-                                <StackPanel x:Name="DonorInfo">
+                                <StackPanel x:Name="DonorInfo" Visibility="Visible">
                                     <TextBlock x:Name="DonorAddress" Text="{Binding Address}" />
                                     <TextBlock x:Name="DonorBloodType" Text="{Binding BloodType}" />
                                     <TextBlock x:Name="DonorEmergencyNumber" Text="{Binding EmergencyNumber}" />
@@ -39,9 +43,9 @@
                 </Maps:MapItemsControl.ItemTemplate>
             </Maps:MapItemsControl>
         </Maps:MapControl>
-        <TextBlock x:Name="textBlock_RouteData" Text="Will contain data about the route"></TextBlock>
+        <TextBlock x:Name="textBlock_RouteData" Text="Will contain data about the route" Visibility="Collapsed" />
 
-        <StackPanel x:Name="StatusPanel" Orientation="Vertical" RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignLeftWithPanel="True" VerticalAlignment="Bottom" HorizontalAlignment="Center" Width="200">
+        <StackPanel x:Name="StatusPanel" Orientation="Vertical" RelativePanel.AlignBottomWithPanel="True" RelativePanel.AlignRightWithPanel="True" RelativePanel.AlignLeftWithPanel="True" VerticalAlignment="Bottom">
             <TextBlock x:Name="StatusLabel" Margin="10,0,0,10" TextWrapping="Wrap" Text="Status:" />
             <Border x:Name="StatusBorder" Margin="0,0,0,0">
                 <ScrollViewer VerticalScrollMode="Auto"  VerticalScrollBarVisibility="Auto" MaxHeight="200">
@@ -50,6 +54,5 @@
                 </ScrollViewer>
             </Border>
         </StackPanel>
-        <Button x:Name="Search" Click="Search_Click" Content="Search for AB+" />
     </Grid>
 </Page>

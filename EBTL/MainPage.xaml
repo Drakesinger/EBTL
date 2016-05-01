@@ -8,15 +8,13 @@
     mc:Ignorable="d">
 
     <Grid Background="White">
-        <Image x:Name="image" Source="Assets/blood-transfusion-bag-vector_23-2147495571_smaller.jpg" NineGrid="0" Stretch="UniformToFill" HorizontalAlignment="Center" VerticalAlignment="Center"/>
-        <TextBlock x:Name="textBlock" Height="38" Margin="0,10,0,0" TextWrapping="Wrap" Text="EBTL" VerticalAlignment="Top" FontWeight="Bold" FontSize="24" TextAlignment="Center" Foreground="#FFC42F2F" SelectionHighlightColor="#FF2388D7" HorizontalAlignment="Center"/>
-        <Button x:Name="button_signUp" Content="Sign up" HorizontalAlignment="Stretch" VerticalAlignment="Bottom" Margin="0,535,0,0" FontSize="36" BorderThickness="5" Background="#FFE6E6E6" Foreground="#FFDA2727" Click="button_signUp_Click">
-            <Button.BorderBrush>
-                <LinearGradientBrush EndPoint="0.5,1" StartPoint="0.5,0">
-                    <GradientStop Color="#FFE6E6E6" Offset="0.678"/>
-                    <GradientStop Color="#FFA1151E"/>
-                </LinearGradientBrush>
-            </Button.BorderBrush>
-        </Button>
+        <StackPanel x:Name="panel_title" Margin="0,20,0,0">
+            <TextBlock x:Name="title" Margin="0,10,0,0" TextWrapping="Wrap" Text="EBTL" FontWeight="Bold" FontSize="24" TextAlignment="Center" Foreground="#FFC42F2F" SelectionHighlightColor="#FF2388D7" />
+            <TextBlock x:Name="title_detailed" TextWrapping="Wrap" Text="Emergency Blood-Type Locator" Foreground="#FFC42F2F" FontSize="18" FontFamily="Segoe Print" TextAlignment="Center" Height="32" />
+        </StackPanel>
+        <StackPanel x:Name="StackPanel_Welcome" Padding="0" Margin="0,20,0,0" HorizontalAlignment="Center" VerticalAlignment="Center">
+            <Image x:Name="image" Source="Assets/blood_bag_donation_medical_donate_transfusion_container_donor_human_flat_design_icon-512.png" NineGrid="0" Width="250" Height="250" HorizontalAlignment="Center" VerticalAlignment="Center" />
+            <AppBarButton x:Name="signUp" HorizontalAlignment="Stretch" Label="Sign me up!" VerticalAlignment="Stretch" Width="Auto" Icon="AddFriend" Click="button_signUp_Click" FontSize="20" FontStyle="Italic" FontFamily="MV Boli" />
+        </StackPanel>
     </Grid>
 </Page>

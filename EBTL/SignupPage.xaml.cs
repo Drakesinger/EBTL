@@ -12,13 +12,8 @@ namespace EBTL
     /// </summary>
     public sealed partial class SignupPage : Page
     {
-        private string debugPath = "\\bin\\Debug\\";
-        private string releasePath = "\\bin\\Debug\\";
-        private string baseDirPath = Directory.GetCurrentDirectory();
-
         private string _Delimiter = ",";
 
-        private string AssetsFilePath;
         private Windows.Data.Xml.Dom.XmlDocument _DocCitiesCH;
 
         public SignupPage()
@@ -35,7 +30,6 @@ namespace EBTL
                 Windows.Data.Xml.Dom.XmlDocument _DocCountries = await LoadXmlFile("Assets", "countries.xml");
                 _DocCitiesCH = await LoadXmlFile("Assets", "cities_ch.xml");
                 var _DocBloodTypes = await LoadXmlFile("Assets", "bloodtypes.xml"); // http://www.redcrossblood.org/learn-about-blood/blood-types
-                //Scenario.RichEditBoxSetMsg(scenario2OriginalData, _DocCountries.GetXml(), true);
 
                 Windows.Data.Xml.Dom.XmlNodeList nodes = _DocCountries.SelectNodes("//country");
                 foreach (var item in nodes)
@@ -92,15 +86,6 @@ namespace EBTL
                 textBox_Address_City.Visibility = Windows.UI.Xaml.Visibility.Visible;
                 comboBox_City.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
             }
-        }
-
-        private System.Xml.XmlDocument loadXML(String FileName)
-        {
-            // Find out how to open files.
-            FileStream XMLFile = File.OpenRead(AssetsFilePath + FileName);
-            System.Xml.XmlDocument XMLDocument = new System.Xml.XmlDocument();
-            XMLDocument.Load(XMLFile);
-            return XMLDocument;
         }
 
         private void button_signUp_Click(object sender, Windows.UI.Xaml.RoutedEventArgs e)

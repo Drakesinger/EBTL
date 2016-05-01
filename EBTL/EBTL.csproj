@@ -120,6 +120,14 @@
     <None Include="EBTL_TemporaryKey.pfx" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Assets\Blood-02-WF.png" />
+    <Content Include="Assets\Blood-02-WF_100x100.png" />
+    <Content Include="Assets\Blood-02-WF_100x100.scale-200.png" />
+    <Content Include="Assets\Blood-02-WF_128.png" />
+    <Content Include="Assets\Blood-02-WF_50x50.png" />
+    <Content Include="Assets\Blood-02-WF_50x50.scale-100.png" />
+    <Content Include="Assets\Blood-02-WF_50x50.scale-200.png" />
+    <Content Include="Assets\Blood-02-WF_bigger.png" />
     <Content Include="Assets\blood-transfusion-bag-vector_23-2147495571.jpg" />
     <Content Include="Assets\blood-transfusion-bag-vector_23-2147495571_smaller.jpg" />
     <Content Include="Assets\bloodtypes.xml">
@@ -133,6 +141,9 @@
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Assets\emergency_sign.jpg" />
+    <Content Include="Assets\Square310x310Logo.scale-200.png" />
+    <Content Include="Assets\StoreLogo.scale-100.png" />
+    <Content Include="Assets\StoreLogo.scale-200.png" />
     <Content Include="Properties\Default.rd.xml" />
     <Content Include="Assets\LockScreenLogo.scale-200.png" />
     <Content Include="Assets\SplashScreen.scale-200.png" />

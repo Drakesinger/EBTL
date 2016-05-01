@@ -150,6 +150,8 @@ namespace EBTL
             }
         }
 
+        #region TODO
+
         private void appBarButton_Settings_Click(object sender, RoutedEventArgs e)
         {
         }
@@ -161,6 +163,8 @@ namespace EBTL
         private void appBarButton_No_Click(object sender, RoutedEventArgs e)
         {
         }
+
+        #endregion TODO
 
         /// <summary>
         /// Used to display messages to the user

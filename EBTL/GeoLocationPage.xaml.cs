@@ -115,9 +115,6 @@ namespace EBTL
                         _cts = new CancellationTokenSource();
                         CancellationToken token = _cts.Token;
 
-                        //_rootPage.NotifyUser("Waiting for update...", NotifyType.StatusMessage);
-
-                        // If DesiredAccuracy or DesiredAccuracyInMeters are not set (or value is 0), DesiredAccuracy.Default is used.
                         Geolocator geolocator = new Geolocator
                         {
                             // Define period.
@@ -130,14 +127,12 @@ namespace EBTL
                         // Subscribe to StatusChanged event to get updates of location status changes.
                         geolocator.StatusChanged += OnStatusChanged;
 
-                        //_rootPage.NotifyUser("Waiting for update...", NotifyType.StatusMessage);
                         LocationDisabledMessage.Visibility = Visibility.Collapsed;
 
                         // Carry out the operation
                         Geoposition pos = await geolocator.GetGeopositionAsync().AsTask(token);
 
                         UpdateLocationData(pos);
-                        // _rootPage.NotifyUser("Location updated.", NotifyType.StatusMessage);
 
                         // The app has been configured.
                         WriteSettings(AppStatus.LocationEnabled);
@@ -150,8 +145,6 @@ namespace EBTL
 
                     case GeolocationAccessStatus.Denied:
                         InformUserOfDeniedChoice();
-                        // Inform the user that we will use his address for location but that his decision may cost a life.
-                        // Battery before lives no?
                         break;
 
                     default:
@@ -170,9 +163,6 @@ namespace EBTL
             {
                 _cts = null;
             }
-
-            //GetGeolocationButton.IsEnabled = true;
-            //CancelGetGeolocationButton.IsEnabled = false;
         }
 
         private void HideLocationDisablesInformation()
@@ -188,7 +178,6 @@ namespace EBTL
 
         private void InformUserOfDeniedChoice()
         {
-            //throw new NotImplementedException();
             // Use address as location.
             WriteSettings(AppStatus.LocationDisabled);
 
@@ -239,26 +228,18 @@ namespace EBTL
                 {
                     case PositionStatus.Ready:
                         // Location platform is providing valid data.
-                        //ScenarioOutput_Status.Text = "Ready";
-                        //_rootPage.NotifyUser("Location platform is ready.", NotifyType.StatusMessage);
                         break;
 
                     case PositionStatus.Initializing:
                         // Location platform is attempting to acquire a fix.
-                        //ScenarioOutput_Status.Text = "Initializing";
-                        //_rootPage.NotifyUser("Location platform is attempting to obtain a position.", NotifyType.StatusMessage);
                         break;
 
                     case PositionStatus.NoData:
                         // Location platform could not obtain location data.
-                        //ScenarioOutput_Status.Text = "No data";
-                        //_rootPage.NotifyUser("Not able to determine the location.", NotifyType.ErrorMessage);
                         break;
 
                     case PositionStatus.Disabled:
                         // The permission to access location data is denied by the user or other policies.
-                        //ScenarioOutput_Status.Text = "Disabled";
-                        //_rootPage.NotifyUser("Access to location is denied.", NotifyType.ErrorMessage);
 
                         // Show message to the user to go to location settings.
                         LocationDisabledMessage.Visibility = Visibility.Visible;
@@ -268,21 +249,16 @@ namespace EBTL
                         break;
 
                     case PositionStatus.NotInitialized:
-                        // The location platform is not initialized. This indicates that the application
-                        // has not made a request for location data.
-                        //ScenarioOutput_Status.Text = "Not initialized";
-                        //_rootPage.NotifyUser("No request for location is made yet.", NotifyType.StatusMessage);
+                        // The location platform is not initialized.
+                        // This indicates that the application has not made a request for location data.
                         break;
 
                     case PositionStatus.NotAvailable:
                         // The location platform is not available on this version of the OS.
-                        //ScenarioOutput_Status.Text = "Not available";
-                        //_rootPage.NotifyUser("Location is not available on this version of the OS.", NotifyType.ErrorMessage);
                         break;
 
                     default:
                         //ScenarioOutput_Status.Text = "Unknown";
-                        //_rootPage.NotifyUser(string.Empty, NotifyType.StatusMessage);
                         break;
                 }
             });
@@ -292,7 +268,6 @@ namespace EBTL
         {
             await Dispatcher.RunAsync(CoreDispatcherPriority.Normal, () =>
             {
-                //_rootPage.NotifyUser("Location updated.", NotifyType.StatusMessage);
                 UpdateLocationData(args.Position);
             });
         }
@@ -378,16 +353,12 @@ namespace EBTL
             //Is there an open connection?
             if (connection == null)
             {
-                //rootPage.NotifyUser("There's no open connection to close", NotifyType.ErrorMessage);
                 return;
             }
 
             //Close the open connection
             connection.Dispose();
             connection = null;
-
-            //Let the user know we closed the connection
-            //rootPage.NotifyUser("Connection is closed", NotifyType.StatusMessage);
         }
 
         private async void GenerateMessage()
@@ -445,6 +416,7 @@ namespace EBTL
 
                 //Something went wrong. Show the user a meaningful
                 //message depending upon the status
+
                 switch (response.Status)
                 {
                     case AppServiceResponseStatus.Failure:

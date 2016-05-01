@@ -10,33 +10,33 @@
     <Grid Background="{ThemeResource ApplicationPageBackgroundThemeBrush}">
         <TextBlock x:Name="textBlock" Height="38" Margin="153.041,10,152.959,0" TextWrapping="Wrap" Text="EBTL" VerticalAlignment="Top" FontWeight="Bold" FontSize="24" TextAlignment="Center" Foreground="#FFC42F2F" SelectionHighlightColor="#FF2388D7" HorizontalAlignment="Center" />
         <StackPanel x:Name="stackPanel_GeoLoc" Width="238" HorizontalAlignment="Center" VerticalAlignment="Center">
-            <TextBlock x:Name="textBlock_Update" TextWrapping="Wrap" Text="Do you agree to send updated geolocation data to our servers?" Margin="5,10" TextAlignment="Center"/>
+            <TextBlock x:Name="textBlock_Update" TextWrapping="Wrap" Text="Do you agree to send updated geolocation data to our servers?" Margin="5,10" TextAlignment="Center" />
             <ToggleSwitch x:Name="toggleSwitch_Update" OffContent="No" OnContent="Yes" HorizontalContentAlignment="Left" UseLayoutRounding="True" MinWidth="0" HorizontalAlignment="Center" Toggled="toggleSwitch_Update_Toggled" />
             <StackPanel x:Name="stackPanel_Setup" Visibility="Collapsed">
                 <TextBlock x:Name="textBlock_Delay" TextWrapping="Wrap" Text="Delay between geolocation update" Padding="0,5,0,0" TextAlignment="Center" />
-                <TextBox x:Name="textBox_Delay" TextWrapping="Wrap" InputScope="Number" TabIndex="1" PlaceholderText="By default: once every 2 hours" BorderBrush="#FF7A7A7A"/>
-                <RadioButton x:Name="radioButton_Hours" Content="Hours" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" GroupName="DelayTimeType" Margin="10,0,0,0" IsChecked="True"/>
-                <RadioButton x:Name="radioButton_Minutes" Content="Minutes" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" GroupName="DelayTimeType" IsChecked="True" Margin="10,0,0,0"/>
-                <TextBlock x:Name="textBlock_Coordinates" TextWrapping="Wrap" Text="GPS Coordinates" Margin="5,10,0,0"/>
-                <Grid x:Name="grid_Coordinates" Margin="0,5,0,0" Height="21">
+                <TextBox x:Name="textBox_Delay" TextWrapping="Wrap" InputScope="Number" TabIndex="1" PlaceholderText="By default: once every 2 hours" BorderBrush="#FF7A7A7A" />
+                <RadioButton x:Name="radioButton_Hours" Content="Hours" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" GroupName="DelayTimeType" Margin="10,0,0,0" />
+                <RadioButton x:Name="radioButton_Minutes" Content="Minutes" HorizontalAlignment="Stretch" VerticalAlignment="Stretch" GroupName="DelayTimeType" IsChecked="True" Margin="10,0,0,0" />
+                <TextBlock x:Name="textBlock_Coordinates" TextWrapping="Wrap" Text="GPS Coordinates" Margin="5,20,0,0" />
+                <Grid x:Name="grid_Coordinates" Margin="0,20,0,0" Height="21">
                     <Grid.RowDefinitions>
-                        <RowDefinition/>
+                        <RowDefinition />
                     </Grid.RowDefinitions>
                     <Grid.ColumnDefinitions>
-                        <ColumnDefinition/>
-                        <ColumnDefinition/>
+                        <ColumnDefinition />
+                        <ColumnDefinition />
                     </Grid.ColumnDefinitions>
-                    <TextBlock x:Name="textBlock_Lat" TextWrapping="NoWrap" Text="Lat" HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="100" MaxHeight="20" Height="20"/>
-                    <TextBlock x:Name="textBlock_Long" TextWrapping="NoWrap" Text="Lon" Grid.Column="1" HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="100" MaxHeight="20"/>
+                    <TextBlock x:Name="textBlock_Lat" TextWrapping="NoWrap" Text="Lat" HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="100" MaxHeight="20" Height="20" />
+                    <TextBlock x:Name="textBlock_Long" TextWrapping="NoWrap" Text="Lon" Grid.Column="1" HorizontalAlignment="Center" TextAlignment="Center" MaxWidth="100" MaxHeight="20" />
                 </Grid>
             </StackPanel>
-            <TextBlock x:Name="textBlock_Information" TextWrapping="Wrap" Text="If you do not, we will use your address to identify your location." TextAlignment="Center"/>
-            <TextBlock x:Name="LocationDisabledMessage" FontStyle="Italic" TextWrapping="Wrap" TextAlignment="Center" Visibility="Collapsed" >
+            <TextBlock x:Name="textBlock_Information" TextWrapping="Wrap" Text="If you do not, we will use your address to identify your location." TextAlignment="Center" />
+            <TextBlock x:Name="LocationDisabledMessage" FontStyle="Italic" TextWrapping="Wrap" TextAlignment="Center" Visibility="Collapsed">
             	<Run Text="This app is not able to access Location. Go to " />
             	<Hyperlink NavigateUri="ms-settings:privacy-location">
             		<Run Text="Settings" />
             	</Hyperlink>
-            	<Run Text=" to check the location privacy settings."/>
+            	<Run Text=" to check the location privacy settings." />
             </TextBlock>
         </StackPanel>
     </Grid>

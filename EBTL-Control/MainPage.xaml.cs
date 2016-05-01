@@ -7,15 +7,19 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.Activation;
 using Windows.ApplicationModel.Background;
+using Windows.ApplicationModel.Core;
 using Windows.Devices.Geolocation;
-
+using Windows.Foundation;
+using Windows.Foundation.Collections;
 using Windows.Services.Maps;
 using Windows.UI.Core;
 using Windows.UI.Notifications;
 using Windows.UI.Popups;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
+using Windows.UI.Xaml.Controls.Maps;
 using Windows.UI.Xaml.Documents;   // For multiple lines of text.
 using Windows.UI.Xaml.Media;
 
@@ -72,7 +76,7 @@ namespace EBTL_Control
             _MainPage = this;
 
             InitializeLocationService();
-            SetupNotificationContent(PayloadType.BackgroundAppClosed);
+            SetupNotificationContent(PayloadType.BackgroundAppClosed, null);
 
             InitializeNotificationsHub();
 
@@ -161,7 +165,6 @@ namespace EBTL_Control
         {
             // TODO ... App to App service to send data to EBTL Client application.
             ToastNotificationManager.History.Clear();
-            ToastHelper.PopCustomToast(NotificationPayload);
 
             // https://blogs.msdn.microsoft.com/tiles_and_toasts/2015/07/08/quickstart-sending-a-local-toast-notification-and-handling-activations-from-it-windows-10/
             // http://stackoverflow.com/questions/36068229/uwp-how-do-a-process-buttons-displayed-in-a-toast-that-are-launched-from-a-backg
@@ -172,6 +175,59 @@ namespace EBTL_Control
             string BingMapsURI = @"bingmaps:?rtp=~pos." + _FoundDonor.Location.Position.Latitude.ToString() + "_" + _FoundDonor.Location.Position.Longitude.ToString();
             // Also correct.
             string DriveToURI = @"ms-drive-to:?destination.latitude=" + _FoundDonor.Location.Position.Latitude.ToString() + "&destination.longitude=" + _FoundDonor.Location.Position.Longitude.ToString();
+
+            //SetupNotificationContent(PayloadType.BackgroundAppClosed, DriveToURI);
+
+            //Error(NotificationPayload);
+
+            ToastHelper.PopToast("Path to hospital", DriveToURI);
+            LaunchMaps(DriveToURI);
+        }
+
+        private async void App_Activated(object sender, IActivatedEventArgs e)
+        {
+            await CoreApplication.MainView.CoreWindow.Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, delegate
+            {
+                if (e.Kind != ActivationKind.ToastNotification)
+                    return;
+
+                var toastArgs = e as ToastNotificationActivatedEventArgs;
+                if (toastArgs == null)
+                {
+                    Error("Activation args was not of type ToastNotificationActivatedEventArgs");
+                    return;
+                }
+
+                string arguments = toastArgs.Argument;
+
+                if (arguments == null || !arguments.Equals("quickReply"))
+                {
+                    Error($"Expected arguments to be 'quickReply' but was '{arguments}'. User input values...\n{ToastHelper.ToString(toastArgs.UserInput)}");
+                    return;
+                }
+
+                // TODO This is where we can handle the notification input.
+                validateStep1(toastArgs.UserInput);
+            });
+        }
+
+        private async void Error(string message)
+        {
+            await new MessageDialog(message, "ERROR").ShowAsync();
+        }
+
+        private void validateStep1(ValueSet result)
+        {
+            if (result.Count != 1)
+                Error("Expected 1 user input value, but there were " + result.Count);
+            else if (!result.ContainsKey("message"))
+                Error("Expected a user input value for 'message', but there was none.");
+            else
+            {
+                var uri = result["message"] as string;
+                Error(uri);
+                // LaunchMaps(uri);
+            }
         }
 
         private async void LaunchMaps(string DriveToURI)
@@ -189,7 +245,7 @@ namespace EBTL_Control
             //}
         }
 
-        private void SetupNotificationContent(PayloadType _Type)
+        private void SetupNotificationContent(PayloadType _Type, string uri)
         {
             switch (_Type)
             {
@@ -221,7 +277,41 @@ namespace EBTL_Control
                     break;
 
                 case PayloadType.BackgroundAppClosed:
-                    NotificationPayload =
+
+                    if (uri != null)
+                    {
+                        NotificationPayload =
+                $@"
+                <toast activationType='background' launch='args'>
+                    <visual>
+                        <binding template='ToastGeneric'>
+                            <text>Background with App Closed</text>
+                            <text>Ensure the app is closed. Make sure ""Windows 10"" is in the first text box. Press ""submit"".</text>
+                        </binding>
+                    </visual>
+                    <actions>
+
+                        <input
+                            id = 'message'
+                            type = 'text'
+                            title = 'Message'
+                            placeHolderContent = 'Enter ""Windows 10""'
+                            defaultInput = '" + uri + $@"' />
+
+                        <action activationType = 'background'
+                                arguments = 'quickReply'
+                                content = 'submit' />
+
+                        <action activationType = 'background'
+                                arguments = 'cancel'
+                                content = 'cancel' />
+
+                    </actions>
+                </toast>";
+                    }
+                    else
+                    {
+                        NotificationPayload =
                 $@"
                 <toast activationType='background' launch='args'>
                     <visual>
@@ -249,6 +339,8 @@ namespace EBTL_Control
 
                     </actions>
                 </toast>";
+                    }
+
                     break;
 
                 case PayloadType.Protocol:
@@ -279,20 +371,36 @@ namespace EBTL_Control
         private void MainMap_MapTapped(Windows.UI.Xaml.Controls.Maps.MapControl sender, Windows.UI.Xaml.Controls.Maps.MapInputEventArgs args)
         {
             var tappedGeoPosition = args.Location.Position;
+
             //string status = "MapTapped at \nLatitude:" + tappedGeoPosition.Latitude + "\nLongitude: " + tappedGeoPosition.Longitude;
             //_MainPage.NotifyUser(status, NotifyType.StatusMessage);
 
+            var _GeoPoint = new Geopoint(tappedGeoPosition);
             Donor _TempDonor = new Donor("Temp " + _Donors.Count, "Test", "07855555524", "Address: Random Address", "AB+")
             {
-                GeoPoint = new Geopoint(new BasicGeoposition()
-                {
-                    Latitude = tappedGeoPosition.Latitude,
-                    Longitude = tappedGeoPosition.Longitude
-                })
+                GeoPoint = _GeoPoint
             };
 
             AddDonorOnMap(_TempDonor);
+
+            AddPOIOnMap(_GeoPoint, _TempDonor);
+
             //GetRouteAndDirections(tappedGeoPosition);
+        }
+
+        private void AddPOIOnMap(Geopoint _GeoPoint, Donor _TempDonor)
+        {
+            // Add a more beautiful pin.
+            // Create a MapIcon.
+            MapIcon mapIcon1 = new MapIcon();
+            mapIcon1.Location = _GeoPoint;
+            mapIcon1.NormalizedAnchorPoint = new Point(0.5, 1.0);
+
+            mapIcon1.Title = _TempDonor.Surname;
+            mapIcon1.ZIndex = 0;
+
+            // Add the MapIcon to the map.
+            MainMap.MapElements.Add(mapIcon1);
         }
 
         private void QueryDonors(string _Filter)
@@ -304,7 +412,7 @@ namespace EBTL_Control
         {
             _Donors.Add(new PointOfInterest(_Donor));
 
-            UpdateMapItemsControlItemsSource();
+            //UpdateMapItemsControlItemsSource();
         }
 
         /// <summary>
@@ -314,7 +422,7 @@ namespace EBTL_Control
         /// <see cref="http://msdn.microsoft.com/EN-US/library/dn792121(v=VS.10,d=hv.2).aspx"/>
         private void UpdateMapItemsControlItemsSource()
         {
-            MapItems.ItemsSource = null;
+            //MapItems.ItemsSource = null;// Apparently not needed now. What the f?
             MapItems.ItemsSource = _Donors;
         }
 
@@ -376,15 +484,14 @@ namespace EBTL_Control
 
             if (_ClosesestDonor != null)
             {
-                _MainPage.NotifyUser("Found one:" + _ClosesestDonor.DisplayName, NotifyType.StatusMessage);
-                // Launch notification?
+                _MainPage.NotifyUser("Closest donor:" + _ClosesestDonor.DisplayName + "\n" + _ClosesestDonor.Location + "\n" + _ClosesestDonor.EmergencyNumber, NotifyType.StatusMessage);
                 LaunchNotification(_ClosesestDonor);
             }
         }
 
         private void Search_Click(object sender, RoutedEventArgs e)
         {
-            SearchClosestDonor("AB+");
+            SearchClosestDonor(bloodtype.Text);
         }
 
         #endregion SearchFunctions
@@ -411,7 +518,7 @@ namespace EBTL_Control
                 MapRouteOptimization.Time,
                 MapRouteRestrictions.None);
 
-            ShowRouteData(routeResult);
+            //ShowRouteData(routeResult);
 
             return routeResult;
         }

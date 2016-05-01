@@ -13,7 +13,7 @@ namespace EBTL_Control.Model
         public PointOfInterest()
         {
             this.NormalizedAnchorPoint = _DefaultAnchorPoint;
-            this.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            this.Visibility = Windows.UI.Xaml.Visibility.Visible;
         }
 
         public PointOfInterest(Donor _Donor)
@@ -32,13 +32,13 @@ namespace EBTL_Control.Model
             }
 
             this.DisplayName = _Donor.Name + " " + _Donor.Surname;
-            this.ImageSourceUri = new Uri("ms-appx:///Assets/MapPin.png", UriKind.RelativeOrAbsolute);
+            this.ImageSourceUri = new Uri("ms-appx:///Assets/User.png", UriKind.RelativeOrAbsolute);
             this.NormalizedAnchorPoint = _DefaultAnchorPoint;
             this.Address = _Donor.Address;
             this.BloodType = _Donor.BloodType;
             this.EmergencyNumber = _Donor.EmergencyNumber;
 
-            this.Visibility = Windows.UI.Xaml.Visibility.Collapsed;
+            this.Visibility = Windows.UI.Xaml.Visibility.Visible;
         }
 
         public string DisplayName { get; set; }
