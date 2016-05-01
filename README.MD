@@ -23,8 +23,10 @@ A (universal) desktop app used by the emergency services:
 * [x]  Shows a map
 * [x]  Active geo-fenced phones are shown on the map
 * [ ]  Clicking on a geo-fence shows information about that person
+    * For some reason this doesn't work anymore. So changed the icon to something more beautiful.
 * [x]  Search for a specific blood-type
      * [ ] In an specified area radius
+       * No real need
 * [x]  Launch an alert for a blood-type
 
 A (universal) desktop app used by volunteers:
@@ -38,9 +40,9 @@ A (universal) desktop app used by volunteers:
 ### Optional Features
 
 Communication between the emergency and user application:
-* [x] Send notifications (a modal pop-up)
+* [x] Send notifications
 * [x] Launch BINGMaps directly after notification has been received
-* [ ] Asks the user if he agrees with sending real-time geo-location data to the server
+* [x] Asks the user if he agrees with sending real-time geo-location data to the server
 * [x] Update the database with the new location of the user    
 * [ ] Mobile App for users (Xamarin for cross platform)
 
@@ -48,5 +50,8 @@ Communication between the emergency and user application:
 
 Toast notification sending between apps requires a WNS service. Installation of the Azure Service nugget fails.
 Code to use and implement this functionality has been written regardless.
+
 Tried using app-service Communication to send data about users that subscribed directly to the EBTL-Control app. It fails for unknown reasons.
+Since we cannot make it work, instead of populating the DB withthe mobile application suscribers, clicking on the map in EBTL-Control adds fictional users  (all of AB+ blood type...).
+
 The Configuration screen that shows after the EBTL app has already been launched doesn't do anything.
