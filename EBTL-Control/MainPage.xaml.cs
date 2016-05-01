@@ -73,11 +73,37 @@ namespace EBTL_Control
 
             InitializeLocationService();
             SetupNotificationContent(PayloadType.BackgroundAppClosed);
+
+            InitializeNotificationsHub();
+
             InitializeBackgroundCommunication();
 
             MainMap.Loaded += MainMapLoaded;
             MainMap.MapTapped += MainMap_MapTapped;
         }
+
+        #region AzureNotificationHub
+
+        /// <summary>
+        /// https://azure.microsoft.com/en-us/documentation/articles/notification-hubs-windows-store-dotnet-get-started/#send-notifications
+        /// </summary>
+        private void InitializeNotificationsHub()
+        {
+            //var channel = await Windows.Networking.PushNotifications.PushNotificationChannelManager.CreatePushNotificationChannelForApplicationAsync();
+
+            //var hub = new NotificationHub("<hub name>", "<connection string with listen access>");
+            //var result = await hub.RegisterNativeAsync(channel.Uri);
+
+            //// Displays the registration ID so you know it was successful
+            //if (result.RegistrationId != null)
+            //{
+            //    var dialog = new MessageDialog("Registration successful: " + result.RegistrationId);
+            //    dialog.Commands.Add(new UICommand("OK"));
+            //    await dialog.ShowAsync();
+            //}
+        }
+
+        #endregion AzureNotificationHub
 
         #region BackgroundTasks
 
@@ -131,17 +157,11 @@ namespace EBTL_Control
 
         #region NotificationService
 
-        private async void LaunchNotification(PointOfInterest _FoundDonor)
+        private void LaunchNotification(PointOfInterest _FoundDonor)
         {
             // TODO ... App to App service to send data to EBTL Client application.
             ToastNotificationManager.History.Clear();
             ToastHelper.PopCustomToast(NotificationPayload);
-
-            ///////////////////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////////
-            //////////////////////  HERE      /////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////////
-            ///////////////////////////////////////////////////////////////////////////////
 
             // https://blogs.msdn.microsoft.com/tiles_and_toasts/2015/07/08/quickstart-sending-a-local-toast-notification-and-handling-activations-from-it-windows-10/
             // http://stackoverflow.com/questions/36068229/uwp-how-do-a-process-buttons-displayed-in-a-toast-that-are-launched-from-a-backg
