@@ -1,9 +1,13 @@
-﻿using System;
+﻿using BackgroundTasks.Helpers;
+using System;
 using System.Threading;
 using System.Threading.Tasks;
+using Windows.ApplicationModel.AppService;
 using Windows.Devices.Geolocation;
+using Windows.Foundation.Collections;
 using Windows.Storage;
 using Windows.UI.Core;
+using Windows.UI.Notifications;
 using Windows.UI.Xaml;
 using Windows.UI.Xaml.Controls;
 using Windows.UI.Xaml.Navigation;
@@ -21,6 +25,8 @@ namespace EBTL
         private Donor _Donor;
         private uint _UpdateDelta = 7200; // 2 Hours.
         private CancellationTokenSource _cts;
+
+        private AppServiceConnection connection;
 
         public GeoLocationPage()
         {
@@ -134,8 +140,12 @@ namespace EBTL
                         // _rootPage.NotifyUser("Location updated.", NotifyType.StatusMessage);
 
                         // The app has been configured.
-
                         WriteSettings(AppStatus.LocationEnabled);
+
+                        // Send data to server.
+                        OpenConnection();
+                        GenerateMessage();
+                        CloseConnection();
                         break;
 
                     case GeolocationAccessStatus.Denied:
@@ -298,6 +308,158 @@ namespace EBTL
             else
             {
                 stackPanel_Setup.Visibility = Visibility.Collapsed;
+            }
+        }
+
+        private async void OpenConnection()
+        {
+            //Is a connection already open?
+            if (connection != null)
+            {
+                //rootPage.NotifyUser("A connection already exists", NotifyType.ErrorMessage);
+                return;
+            }
+
+            //Set up a new app service connection
+            connection = new AppServiceConnection();
+            connection.AppServiceName = "com.he-arc.contentprovider";
+            connection.PackageFamilyName = "212a2e96-fa51-46b6-b0e7-46e21d5029c5_1.0.0.0_x86__kswx83yzr7kvy";
+            connection.ServiceClosed += Connection_ServiceClosed;
+            AppServiceConnectionStatus status = await connection.OpenAsync();
+
+            //If the new connection opened successfully we're done here
+            if (status == AppServiceConnectionStatus.Success)
+            {
+                //rootPage.NotifyUser("Connection is open", NotifyType.StatusMessage);
+            }
+            else
+            {
+                //Something went wrong. Lets figure out what it was and show the user a meaningful message.
+                switch (status)
+                {
+                    case AppServiceConnectionStatus.AppNotInstalled:
+                        //rootPage.NotifyUser("The app AppServicesProvider is not installed. Deploy AppServicesProvider to this device and try again.", NotifyType.ErrorMessage);
+                        break;
+
+                    case AppServiceConnectionStatus.AppUnavailable:
+                        //rootPage.NotifyUser("The app AppServicesProvider is not available. This could be because it is currently being updated or was installed to a removable device that is no longer available.", NotifyType.ErrorMessage);
+                        break;
+
+                    case AppServiceConnectionStatus.AppServiceUnavailable:
+                        //rootPage.NotifyUser(string.Format("The app AppServicesProvider is installed but it does not provide the app service {0}.", connection.AppServiceName), NotifyType.ErrorMessage);
+                        break;
+
+                    case AppServiceConnectionStatus.Unknown:
+                        //rootPage.NotifyUser("An unkown error occurred while we were trying to open an AppServiceConnection.", NotifyType.ErrorMessage);
+                        break;
+                }
+
+                //Clean up before we go
+                connection.Dispose();
+                connection = null;
+            }
+        }
+
+        private async void Connection_ServiceClosed(AppServiceConnection sender, AppServiceClosedEventArgs args)
+        {
+            await Dispatcher.RunAsync(Windows.UI.Core.CoreDispatcherPriority.Normal, () =>
+            {
+                //Dispose the connection reference we're holding
+                if (connection != null)
+                {
+                    connection.Dispose();
+                    connection = null;
+                }
+            });
+        }
+
+        private void CloseConnection()
+        {
+            //Is there an open connection?
+            if (connection == null)
+            {
+                //rootPage.NotifyUser("There's no open connection to close", NotifyType.ErrorMessage);
+                return;
+            }
+
+            //Close the open connection
+            connection.Dispose();
+            connection = null;
+
+            //Let the user know we closed the connection
+            //rootPage.NotifyUser("Connection is closed", NotifyType.StatusMessage);
+        }
+
+        private async void GenerateMessage()
+        {
+            if (_Donor == null)
+            {
+                // Oh oh.
+                return;
+            }
+            //Is there an open connection?
+            if (connection == null)
+            {
+                //rootPage.NotifyUser("You need to open a connection before trying to generate a random number.", NotifyType.ErrorMessage);
+                return;
+            }
+
+            //Send a message to the app service
+            var inputs = new ValueSet();
+            inputs.Add("Surname", _Donor.Surname);
+            inputs.Add("Name", _Donor.Name);
+            inputs.Add("Address", _Donor.Address);
+            inputs.Add("BloodType", _Donor.BloodType);
+            inputs.Add("GeoLocation", _Donor.GeoLocation);
+            inputs.Add("GeoPoint", _Donor.GeoPoint);
+            inputs.Add("EmergencyNumber", _Donor.EmergencyNumber);
+            AppServiceResponse response = await connection.SendMessageAsync(inputs);
+
+            //If the service responded display the message. We're done!
+            if (response.Status == AppServiceResponseStatus.Success)
+            {
+                ToastNotificationManager.History.Clear();
+                ToastHelper.PopToast("Data received!!!", "YESSS");
+
+                //if (!response.Message.ContainsKey("result"))
+                //{
+                //    rootPage.NotifyUser("The app service response message does not contain a key called \"result\"", NotifyType.StatusMessage);
+                //    return;
+                //}
+
+                //var resultText = response.Message["result"].ToString();
+                //if (!string.IsNullOrEmpty(resultText))
+                //{
+                //    Result.Text = resultText;
+                //    rootPage.NotifyUser("App service responded with a result", NotifyType.StatusMessage);
+                //}
+                //else
+                //{
+                //    rootPage.NotifyUser("App service did not respond with a result", NotifyType.ErrorMessage);
+                //}
+            }
+            else
+            {
+                ToastNotificationManager.History.Clear();
+                ToastHelper.PopToast("Damn", "NOOOOO");
+
+                //Something went wrong. Show the user a meaningful
+                //message depending upon the status
+                switch (response.Status)
+                {
+                    case AppServiceResponseStatus.Failure:
+                        //rootPage.NotifyUser("The service failed to acknowledge the message we sent it. It may have been terminated because the client was suspended.", NotifyType.ErrorMessage);
+                        break;
+
+                    case AppServiceResponseStatus.ResourceLimitsExceeded:
+                        //rootPage.NotifyUser("The service exceeded the resources allocated to it and had to be terminated.", NotifyType.ErrorMessage);
+                        break;
+
+                    case AppServiceResponseStatus.Unknown:
+                    default:
+                        //rootPage.NotifyUser("An unkown error occurred while we were trying to send a message to the service.", NotifyType.ErrorMessage);
+                        break;
+                }
             }
         }
 

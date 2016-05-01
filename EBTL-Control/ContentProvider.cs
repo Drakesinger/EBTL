@@ -1,7 +1,10 @@
-﻿using System;
+﻿using BackgroundTasks.Helpers;
+using System;
 using Windows.ApplicationModel.AppService;
 using Windows.ApplicationModel.Background;
+using Windows.Devices.Geolocation;
 using Windows.Foundation.Collections;
+using Windows.UI.Notifications;
 
 namespace EBTL_Control
 {
@@ -9,7 +12,6 @@ namespace EBTL_Control
     {
         private BackgroundTaskDeferral serviceDeferral;
         private AppServiceConnection connection;
-        private Random randomNumberGenerator;
 
         public void Run(IBackgroundTaskInstance taskInstance)
         {
@@ -17,9 +19,6 @@ namespace EBTL_Control
             serviceDeferral = taskInstance.GetDeferral();
 
             taskInstance.Canceled += OnTaskCanceled;
-
-            //Initialize the random number generator
-            randomNumberGenerator = new Random((int)DateTime.Now.Ticks);
 
             var details = taskInstance.TriggerDetails as AppServiceTriggerDetails;
             connection = details.AppServiceConnection;
@@ -46,12 +45,20 @@ namespace EBTL_Control
             try
             {
                 var input = args.Request.Message;
-                int minValue = (int)input["minvalue"];
-                int maxValue = (int)input["maxvalue"];
+                string Surname = (string)input["Surname"];
+                string Name = (string)input["Name"];
+                string Address = (string)input["Address"];
+                string BloodType = (string)input["BloodType"];
+                Geoposition GeoLocation = (Geoposition)input["GeoLocation"];
+                Geopoint GeoPoint = (Geopoint)input["GeoPoint"];
+                string EmergencyNumber = (string)input["EmergencyNumber"];
+
+                ToastNotificationManager.History.Clear();
+                ToastHelper.PopToast("Data received!!!", "" + GeoPoint.Position.Latitude.ToString() + GeoPoint.Position.Longitude.ToString());
 
                 //Create the response
                 var result = new ValueSet();
-                result.Add("result", randomNumberGenerator.Next(minValue, maxValue));
+                result.Add("result", "Data received");
 
                 //Send the response
                 await args.Request.SendResponseAsync(result);

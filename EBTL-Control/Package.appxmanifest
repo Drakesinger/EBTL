@@ -24,12 +24,15 @@
         </uap:InitialRotationPreference>
       </uap:VisualElements>
       <Extensions>
-        <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTasks.ToastNotificationQuickReplyTask">
+        <uap:Extension Category="windows.appService" EntryPoint="ContentProvider">
+          <uap:AppService Name="com.he-arc.contentprovider" />
+        </uap:Extension>
+        <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTasks.ToastActivationTypeBackgroundClosedTask">
           <BackgroundTasks>
             <Task Type="systemEvent" />
           </BackgroundTasks>
         </Extension>
-        <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTasks.ToastActivationTypeBackgroundClosedTask">
+        <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTasks.ToastNotificationQuickReplyTask">
           <BackgroundTasks>
             <Task Type="systemEvent" />
           </BackgroundTasks>
