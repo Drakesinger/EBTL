@@ -5,7 +5,7 @@
   <Properties>
     <DisplayName>EBTL</DisplayName>
     <PublisherDisplayName>horia.mut</PublisherDisplayName>
-    <Logo>Assets\Blood-02-WF_100x100.png</Logo>
+    <Logo>Assets\StoreLogo.png</Logo>
   </Properties>
   <Dependencies>
     <TargetDeviceFamily Name="Windows.Universal" MinVersion="10.0.0.0" MaxVersionTested="10.0.0.0" />
@@ -16,8 +16,9 @@
   <Applications>
     <Application Id="App" Executable="$targetnametoken$.exe" EntryPoint="EBTL.App">
       <uap:VisualElements DisplayName="EBTL" Square150x150Logo="Assets\Square150x150Logo.png" Square44x44Logo="Assets\Square44x44Logo.png" Description="EBTL" BackgroundColor="transparent">
-        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\Square310x310Logo.png" ShortName="EBTL">
+        <uap:DefaultTile Wide310x150Logo="Assets\Wide310x150Logo.png" Square310x310Logo="Assets\Square310x310Logo.png" ShortName="EBTL" Square71x71Logo="Assets\Square71x71Logo.png">
           <uap:ShowNameOnTiles>
+            <uap:ShowOn Tile="square150x150Logo" />
             <uap:ShowOn Tile="square310x310Logo" />
           </uap:ShowNameOnTiles>
         </uap:DefaultTile>
@@ -28,12 +29,12 @@
         </uap:InitialRotationPreference>
       </uap:VisualElements>
       <Extensions>
-        <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTasks.ToastNotificationQuickReplyTask">
+        <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTasks.ToastActivationTypeBackgroundClosedTask">
           <BackgroundTasks>
             <Task Type="systemEvent" />
           </BackgroundTasks>
         </Extension>
-        <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTasks.ToastActivationTypeBackgroundClosedTask">
+        <Extension Category="windows.backgroundTasks" EntryPoint="BackgroundTasks.ToastNotificationQuickReplyTask">
           <BackgroundTasks>
             <Task Type="systemEvent" />
           </BackgroundTasks>
